@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
+import UserProfileCard from "@/components/UserProfileCard";
 import SuggestionsCarousel from "@/components/SuggestionsCarousel";
 import DashboardGrid from "@/components/DashboardGrid";
 import MobileNav from "@/components/MobileNav";
 import { CarouselSkeleton, ServiceGridSkeleton } from "@/components/LoadingSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import type { Suggestion } from "@shared/schema";
+
+// todo: remove mock functionality
+const mockUser = {
+  name: "Mohammed Al-Rashid",
+  id: "123",
+};
 
 // todo: remove mock functionality
 const mockSuggestions: Suggestion[] = [
@@ -91,7 +99,21 @@ export default function Home() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header onMenuClick={() => console.log("Menu opened")} />
 
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-8">
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+        <section aria-label="User Profile">
+          {isLoading ? (
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-card-border bg-card">
+              <Skeleton className="h-14 w-14 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-5 w-36" />
+              </div>
+            </div>
+          ) : (
+            <UserProfileCard name={mockUser.name} greeting="Welcome back" />
+          )}
+        </section>
+
         <section aria-label="Smart Suggestions">
           <h2
             className="text-lg font-semibold text-foreground mb-4"

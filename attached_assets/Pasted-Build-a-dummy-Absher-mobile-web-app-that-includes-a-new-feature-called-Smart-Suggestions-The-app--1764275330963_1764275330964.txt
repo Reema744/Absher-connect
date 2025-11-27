@@ -1,0 +1,168 @@
+Build a dummy Absher mobile/web app that includes a new feature called “Smart Suggestions.” The app should simulate how Absher displays personalized suggestion cards at the top of the homepage.
+Use dummy APIs, mock user data, and a horizontal card carousel with auto-slide.
+
+1. Tech Stack
+
+Frontend: React (or Next.js preferred if easier)
+
+Backend: Node.js + Express
+
+Data: Local JSON files used as mock APIs
+
+Styling: Tailwind CSS or Material UI (developer’s choice)
+
+2. Features to Build
+A. Home Page (Frontend)
+
+Header: “Absher (Dummy App)”
+
+At the top of the home page, add Smart Suggestions Carousel.
+
+The carousel must:
+
+Display multiple suggestion cards side-by-side horizontally
+
+Be scrollable horizontally by the user
+
+Auto-slide every few seconds
+
+Loop continuously
+
+Pause auto-slide on hover
+
+Beneath the suggestions, include a simple dashboard placeholder.
+
+Smart Suggestion Card Format
+
+Each card must include:
+
+Title
+
+Description
+
+Optional expiry date
+
+Action button (e.g., “Take Action”)
+
+Clean, Absher-style green theme
+
+3. Smart Suggestions Engine (Backend)
+
+Create an endpoint:
+
+GET /api/suggestions/:userId
+
+This endpoint must:
+
+Accept userId
+
+Fetch mock user data from the /data folder
+
+Apply suggestion rules
+
+Return an array of suggestions for the carousel
+
+4. Dummy API Data
+
+Create a /data folder containing:
+
+A. users.json
+
+Example entry:
+
+{
+  "id": "123",
+  "passportExpiry": "2025-01-10",
+  "nationalIdExpiry": "2024-12-01",
+  "drivingLicenseExpiry": "2024-08-15",
+  "violations": [
+    { "id": "V1001", "discountExpiry": "2024-07-01T12:00:00Z" }
+  ],
+  "appointments": [
+    { "id": "A2001", "date": "2024-06-30T10:00:00Z" }
+  ],
+  "delegations": [
+    { "id": "D3001", "expires": "2024-07-05" }
+  ],
+  "hajjEligible": true
+}
+
+B. config.json
+{
+  "expiryThresholdDays": 30,
+  "appointmentReminderHours": 24,
+  "violationDiscountThresholdHours": 72,
+  "delegationExpiryDays": 7
+}
+
+5. Suggestion Rules to Implement in Backend
+Generate a Smart Suggestion if:
+1. Document Expiry
+
+Passport, National ID, or Driver License expires in < 30 days.
+
+2. Traffic Violation Discount
+
+A violation discount expires in < 72 hours.
+
+3. Appointment Reminder
+
+Appointment is within the next 24 hours.
+
+4. Delegation Expiry
+
+Delegation expires within < 7 days.
+
+5. Hajj Eligibility
+
+If hajjEligible = true, show a suggestion 6 months before Hajj period
+(Use a dummy logic since data is mocked.)
+
+6. Example API Response
+[
+  {
+    "title": "Passport expiring soon",
+    "description": "Your passport will expire in 20 days.",
+    "actionUrl": "/passport-renewal"
+  },
+  {
+    "title": "Violation discount ending",
+    "description": "A traffic violation discount expires in 48 hours.",
+    "actionUrl": "/pay-violation"
+  },
+  {
+    "title": "Appointment Tomorrow",
+    "description": "You have an Absher appointment in 24 hours.",
+    "actionUrl": "/appointments"
+  }
+]
+
+7. Deliverables
+Backend
+
+✔ Express server (index.js)
+✔ Route file (routes/suggestions.js)
+✔ Mock JSON data in /data folder
+✔ Suggestion engine logic with date calculations
+✔ Dummy endpoint responding instantly
+
+Frontend
+
+✔ Home page with Absher-green theme
+✔ Smart Suggestions horizontal card carousel
+✔ Carousel must auto-slide
+✔ Cards are scrollable horizontally
+✔ Fetch suggestions from /api/suggestions/:userId
+✔ Use userId "123" for testing
+
+8. UI Requirements
+
+Cards must be attractive and simple
+
+Horizontal scroll using CSS overflow-x or a library
+
+Add auto-slide (React interval or carousel library)
+
+Max height for carousel ~150–200px
+
+Cards should be rounded, slightly elevated, with shadow

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import Header from "@/components/Header";
 import UserProfileCard from "@/components/UserProfileCard";
 import SuggestionsCarousel from "@/components/SuggestionsCarousel";
@@ -9,77 +10,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import type { Suggestion } from "@shared/schema";
 
-// todo: remove mock functionality
-const mockUser = {
-  name: "Mohammed Al-Rashid",
-  id: "123",
-};
+const USER_ID = "123";
 
-// todo: remove mock functionality
-const mockSuggestions: Suggestion[] = [
-  {
-    id: "1",
-    title: "Passport Expiring Soon",
-    description: "Your passport will expire in 20 days. Renew now to avoid travel disruptions.",
-    actionUrl: "/passport-renewal",
-    expiryDate: "20 days",
-    type: "document",
-    priority: "high",
-  },
-  {
-    id: "2",
-    title: "Violation Discount Ending",
-    description: "A traffic violation discount expires in 48 hours. Pay now to save.",
-    actionUrl: "/pay-violation",
-    expiryDate: "48 hours",
-    type: "violation",
-    priority: "high",
-  },
-  {
-    id: "3",
-    title: "Appointment Tomorrow",
-    description: "You have an Absher appointment scheduled for tomorrow at 10:00 AM.",
-    actionUrl: "/appointments",
-    expiryDate: "24 hours",
-    type: "appointment",
-    priority: "medium",
-  },
-  {
-    id: "4",
-    title: "Delegation Expiring",
-    description: "Your delegation authority expires in 5 days. Renew to maintain access.",
-    actionUrl: "/delegations",
-    expiryDate: "5 days",
-    type: "delegation",
-    priority: "low",
-  },
-  {
-    id: "5",
-    title: "Hajj Registration Open",
-    description: "You are eligible for Hajj. Registration period is now open.",
-    actionUrl: "/hajj-registration",
-    type: "hajj",
-    priority: "medium",
-  },
-];
+interface UserProfile {
+  id: string;
+  name: string;
+}
 
 export default function Home() {
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("home");
   const { toast } = useToast();
 
-  useEffect(() => {
-    // todo: replace with real API call
-    const loadSuggestions = async () => {
-      setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSuggestions(mockSuggestions);
-      setIsLoading(false);
-    };
+  const { data: user, isLoading: isUserLoading } = useQuery<UserProfile>({
+    queryKey: ["/api/users", USER_ID],
+  });
 
-    loadSuggestions();
-  }, []);
+  const { data: suggestions = [], isLoading: isSuggestionsLoading } = useQuery<Suggestion[]>({
+    queryKey: ["/api/suggestions", USER_ID],
+  });
+
+  const isLoading = isUserLoading || isSuggestionsLoading;
 
   const handleSuggestionAction = (actionUrl: string) => {
     toast({
@@ -110,7 +60,7 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <UserProfileCard name={mockUser.name} greeting="Welcome back" />
+            <UserProfileCard name={user?.name || "User"} greeting="Welcome back" />
           )}
         </section>
 

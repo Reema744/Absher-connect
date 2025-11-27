@@ -1,0 +1,30 @@
+{
+  "123": {
+    "id": "123",
+    "name": "Mohammed Al-Rashid",
+    "passportExpiry": "2025-01-10",
+    "nationalIdExpiry": "2024-12-01",
+    "drivingLicenseExpiry": "2024-08-15",
+    "violations": [
+      { "id": "V1001", "discountExpiry": "2024-07-01T12:00:00Z" }
+    ],
+    "appointments": [
+      { "id": "A2001", "date": "2024-06-30T10:00:00Z" }
+    ],
+    "delegations": [
+      { "id": "D3001", "expires": "2024-07-05" }
+    ],
+    "hajjEligible": true
+  },
+  "456": {
+    "id": "456",
+    "name": "Ahmed Hassan",
+    "passportExpiry": "2026-05-20",
+    "nationalIdExpiry": "2025-03-15",
+    "drivingLicenseExpiry": "2025-11-30",
+    "violations": [],
+    "appointments": [],
+    "delegations": [],
+    "hajjEligible": false
+  }
+}

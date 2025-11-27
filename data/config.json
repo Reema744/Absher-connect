@@ -1,0 +1,6 @@
+{
+  "expiryThresholdDays": 30,
+  "appointmentReminderHours": 24,
+  "violationDiscountThresholdHours": 72,
+  "delegationExpiryDays": 7
+}

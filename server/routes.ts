@@ -275,5 +275,106 @@ export async function registerRoutes(
     return res.json(hajjStatus);
   });
 
+  // Internal APIs for AI suggestions (no auth required - server-to-server only)
+  app.get("/api/internal/services/passport/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId, 10);
+    
+    if (isNaN(numericUserId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const passport = await storage.getPassportByUserId(numericUserId);
+    if (!passport) {
+      return res.status(404).json({ error: "Passport not found" });
+    }
+
+    return res.json(passport);
+  });
+
+  app.get("/api/internal/services/national-id/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId, 10);
+    
+    if (isNaN(numericUserId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const nationalId = await storage.getNationalIdByUserId(numericUserId);
+    if (!nationalId) {
+      return res.status(404).json({ error: "National ID not found" });
+    }
+
+    return res.json(nationalId);
+  });
+
+  app.get("/api/internal/services/driving-license/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId, 10);
+    
+    if (isNaN(numericUserId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const license = await storage.getDrivingLicenseByUserId(numericUserId);
+    if (!license) {
+      return res.status(404).json({ error: "Driving license not found" });
+    }
+
+    return res.json(license);
+  });
+
+  app.get("/api/internal/services/violations/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId, 10);
+    
+    if (isNaN(numericUserId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const violations = await storage.getViolationsByUserId(numericUserId);
+    return res.json(violations);
+  });
+
+  app.get("/api/internal/services/appointments/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId, 10);
+    
+    if (isNaN(numericUserId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const appointments = await storage.getAppointmentsByUserId(numericUserId);
+    return res.json(appointments);
+  });
+
+  app.get("/api/internal/services/delegations/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId, 10);
+    
+    if (isNaN(numericUserId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const delegations = await storage.getDelegationsByUserId(numericUserId);
+    return res.json(delegations);
+  });
+
+  app.get("/api/internal/services/hajj/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId, 10);
+    
+    if (isNaN(numericUserId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const hajjStatus = await storage.getHajjStatusByUserId(numericUserId);
+    if (!hajjStatus) {
+      return res.status(404).json({ error: "Hajj status not found" });
+    }
+
+    return res.json(hajjStatus);
+  });
+
   return httpServer;
 }

@@ -1,5 +1,6 @@
-import { storage } from "./storage";
 import type { Suggestion } from "@shared/schema";
+
+const API_BASE = "http://localhost:5000";
 
 interface DocumentData {
   documentType: string;
@@ -62,6 +63,25 @@ function determinePriority(daysToExpiry: number): "high" | "medium" | "low" {
   return "low";
 }
 
+async function fetchFromApi(endpoint: string, userId: number) {
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      console.warn(`API error for ${endpoint}: ${response.status}`);
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching ${endpoint}:`, error);
+    return null;
+  }
+}
+
 export async function generateSuggestions(userId: number): Promise<Suggestion[]> {
   const suggestions: Suggestion[] = [];
 
@@ -69,8 +89,8 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   const documentsToCheck: DocumentData[] = [];
 
   // Fetch passport
-  const passport = await storage.getPassportByUserId(userId);
-  if (passport) {
+  const passport = await fetchFromApi(`/api/internal/services/passport/${userId}`, userId);
+  if (passport?.expiryDate) {
     const daysUntil = getDaysUntil(passport.expiryDate);
     if (daysUntil > 0) {
       documentsToCheck.push({
@@ -85,14 +105,14 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   }
 
   // Fetch national ID
-  const nationalId = await storage.getNationalIdByUserId(userId);
-  if (nationalId) {
+  const nationalId = await fetchFromApi(`/api/internal/services/national-id/${userId}`, userId);
+  if (nationalId?.expiryDate) {
     const daysUntil = getDaysUntil(nationalId.expiryDate);
     if (daysUntil > 0) {
       documentsToCheck.push({
         documentType: "National ID",
         daysToExpiry: daysUntil,
-        documentImportance: "HIGH", // National ID is always high importance
+        documentImportance: "HIGH",
         hasLateRenewalBefore: daysUntil < 0,
         serviceId: nationalId.id,
         actionUrl: "/services/national-id",
@@ -101,8 +121,11 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   }
 
   // Fetch driving license
-  const drivingLicense = await storage.getDrivingLicenseByUserId(userId);
-  if (drivingLicense) {
+  const drivingLicense = await fetchFromApi(
+    `/api/internal/services/driving-license/${userId}`,
+    userId
+  );
+  if (drivingLicense?.expiryDate) {
     const daysUntil = getDaysUntil(drivingLicense.expiryDate);
     if (daysUntil > 0) {
       documentsToCheck.push({
@@ -133,75 +156,81 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
     }
   }
 
-  // Also check violations with discount expiring (high urgency)
-  const violations = await storage.getViolationsByUserId(userId);
-  for (const violation of violations) {
-    if (violation.status === "unpaid" && violation.discountExpiry) {
-      const hoursUntil = getHoursUntil(violation.discountExpiry);
-      if (hoursUntil > 0 && hoursUntil <= 72) {
-        suggestions.push({
-          id: `violation-${violation.id}`,
-          title: "Violation Discount Ending",
-          description: `A traffic violation discount expires in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}. Pay now to save.`,
-          actionUrl: `/services/violation/${violation.id}`,
-          expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
-          type: "violation",
-          priority: "high",
-          serviceId: violation.id,
-        });
+  // Fetch violations
+  const violations = await fetchFromApi(`/api/internal/services/violations/${userId}`, userId);
+  if (Array.isArray(violations)) {
+    for (const violation of violations) {
+      if (violation.status === "unpaid" && violation.discountExpiry) {
+        const hoursUntil = getHoursUntil(violation.discountExpiry);
+        if (hoursUntil > 0 && hoursUntil <= 72) {
+          suggestions.push({
+            id: `violation-${violation.id}`,
+            title: "Violation Discount Ending",
+            description: `A traffic violation discount expires in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}. Pay now to save.`,
+            actionUrl: `/services/violation/${violation.id}`,
+            expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
+            type: "violation",
+            priority: "high",
+            serviceId: violation.id,
+          });
+        }
       }
     }
   }
 
-  // Check upcoming appointments
-  const appointments = await storage.getAppointmentsByUserId(userId);
-  for (const appointment of appointments) {
-    if (appointment.status === "scheduled") {
-      const hoursUntil = getHoursUntil(appointment.appointmentDate);
-      if (hoursUntil > 0 && hoursUntil <= 24) {
-        const appointmentDate = new Date(appointment.appointmentDate);
-        const timeString = appointmentDate.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        });
-        suggestions.push({
-          id: `appointment-${appointment.id}`,
-          title: "Appointment Coming Up",
-          description: `You have an Absher appointment in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""} at ${timeString}.`,
-          actionUrl: `/services/appointment/${appointment.id}`,
-          expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
-          type: "appointment",
-          priority: "medium",
-          serviceId: appointment.id,
-        });
+  // Fetch appointments
+  const appointments = await fetchFromApi(`/api/internal/services/appointments/${userId}`, userId);
+  if (Array.isArray(appointments)) {
+    for (const appointment of appointments) {
+      if (appointment.status === "scheduled") {
+        const hoursUntil = getHoursUntil(appointment.appointmentDate);
+        if (hoursUntil > 0 && hoursUntil <= 24) {
+          const appointmentDate = new Date(appointment.appointmentDate);
+          const timeString = appointmentDate.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          });
+          suggestions.push({
+            id: `appointment-${appointment.id}`,
+            title: "Appointment Coming Up",
+            description: `You have an Absher appointment in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""} at ${timeString}.`,
+            actionUrl: `/services/appointment/${appointment.id}`,
+            expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
+            type: "appointment",
+            priority: "medium",
+            serviceId: appointment.id,
+          });
+        }
       }
     }
   }
 
-  // Check expiring delegations
-  const delegations = await storage.getDelegationsByUserId(userId);
-  for (const delegation of delegations) {
-    if (delegation.status === "active") {
-      const daysUntil = getDaysUntil(delegation.expiryDate);
-      if (daysUntil > 0 && daysUntil <= 7) {
-        const priority = daysUntil <= 3 ? "high" : "medium";
-        suggestions.push({
-          id: `delegation-${delegation.id}`,
-          title: "Delegation Expiring",
-          description: `Your delegation authority expires in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew to maintain access.`,
-          actionUrl: `/services/delegation/${delegation.id}`,
-          expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
-          type: "delegation",
-          priority,
-          serviceId: delegation.id,
-        });
+  // Fetch delegations
+  const delegations = await fetchFromApi(`/api/internal/services/delegations/${userId}`, userId);
+  if (Array.isArray(delegations)) {
+    for (const delegation of delegations) {
+      if (delegation.status === "active") {
+        const daysUntil = getDaysUntil(delegation.expiryDate);
+        if (daysUntil > 0 && daysUntil <= 7) {
+          const priority = daysUntil <= 3 ? "high" : "medium";
+          suggestions.push({
+            id: `delegation-${delegation.id}`,
+            title: "Delegation Expiring",
+            description: `Your delegation authority expires in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew to maintain access.`,
+            actionUrl: `/services/delegation/${delegation.id}`,
+            expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
+            type: "delegation",
+            priority,
+            serviceId: delegation.id,
+          });
+        }
       }
     }
   }
 
-  // Check Hajj eligibility
-  const hajjStatus = await storage.getHajjStatusByUserId(userId);
+  // Fetch Hajj status
+  const hajjStatus = await fetchFromApi(`/api/internal/services/hajj/${userId}`, userId);
   if (hajjStatus && hajjStatus.eligible && hajjStatus.registrationStatus !== "registered") {
     const now = new Date();
     const currentMonth = now.getMonth();

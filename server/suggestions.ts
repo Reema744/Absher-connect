@@ -1,33 +1,7 @@
+import { storage } from "./storage";
+import type { Suggestion } from "@shared/schema";
 import { readFileSync } from "fs";
 import { join } from "path";
-import type { Suggestion } from "@shared/schema";
-
-interface Violation {
-  id: string;
-  discountExpiry: string;
-}
-
-interface Appointment {
-  id: string;
-  date: string;
-}
-
-interface Delegation {
-  id: string;
-  expires: string;
-}
-
-interface UserData {
-  id: string;
-  name: string;
-  passportExpiry: string;
-  nationalIdExpiry: string;
-  drivingLicenseExpiry: string;
-  violations: Violation[];
-  appointments: Appointment[];
-  delegations: Delegation[];
-  hajjEligible: boolean;
-}
 
 interface Config {
   expiryThresholdDays: number;
@@ -36,220 +10,167 @@ interface Config {
   delegationExpiryDays: number;
 }
 
-function loadUsers(): Record<string, UserData> {
-  const filePath = join(process.cwd(), "data", "users.json");
-  const data = readFileSync(filePath, "utf-8");
-  return JSON.parse(data);
-}
-
 function loadConfig(): Config {
   const filePath = join(process.cwd(), "data", "config.json");
   const data = readFileSync(filePath, "utf-8");
   return JSON.parse(data);
 }
 
-function getDaysUntil(dateString: string): number {
+function getDaysUntil(dateString: string | Date): number {
   const targetDate = new Date(dateString);
   const now = new Date();
   const diffTime = targetDate.getTime() - now.getTime();
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
-function getHoursUntil(dateString: string): number {
+function getHoursUntil(dateString: string | Date): number {
   const targetDate = new Date(dateString);
   const now = new Date();
   const diffTime = targetDate.getTime() - now.getTime();
   return Math.ceil(diffTime / (1000 * 60 * 60));
 }
 
-function checkDocumentExpiry(
-  documentName: string,
-  expiryDate: string,
-  thresholdDays: number,
-  actionUrl: string
-): Suggestion | null {
-  const daysUntil = getDaysUntil(expiryDate);
-  
-  if (daysUntil > 0 && daysUntil <= thresholdDays) {
-    const priority = daysUntil <= 7 ? "high" : daysUntil <= 14 ? "medium" : "low";
-    return {
-      id: `doc-${documentName.toLowerCase().replace(/\s+/g, "-")}`,
-      title: `${documentName} Expiring Soon`,
-      description: `Your ${documentName.toLowerCase()} will expire in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew now to avoid service disruptions.`,
-      actionUrl,
-      expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
-      type: "document",
-      priority,
-    };
-  }
-  return null;
-}
-
-function checkViolationDiscount(
-  violation: Violation,
-  thresholdHours: number
-): Suggestion | null {
-  const hoursUntil = getHoursUntil(violation.discountExpiry);
-  
-  if (hoursUntil > 0 && hoursUntil <= thresholdHours) {
-    return {
-      id: `violation-${violation.id}`,
-      title: "Violation Discount Ending",
-      description: `A traffic violation discount expires in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}. Pay now to save.`,
-      actionUrl: "/pay-violation",
-      expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
-      type: "violation",
-      priority: "high",
-    };
-  }
-  return null;
-}
-
-function checkAppointmentReminder(
-  appointment: Appointment,
-  reminderHours: number
-): Suggestion | null {
-  const hoursUntil = getHoursUntil(appointment.date);
-  
-  if (hoursUntil > 0 && hoursUntil <= reminderHours) {
-    const appointmentDate = new Date(appointment.date);
-    const timeString = appointmentDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-    
-    return {
-      id: `appointment-${appointment.id}`,
-      title: "Appointment Coming Up",
-      description: `You have an Absher appointment in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""} at ${timeString}.`,
-      actionUrl: "/appointments",
-      expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
-      type: "appointment",
-      priority: "medium",
-    };
-  }
-  return null;
-}
-
-function checkDelegationExpiry(
-  delegation: Delegation,
-  thresholdDays: number
-): Suggestion | null {
-  const daysUntil = getDaysUntil(delegation.expires);
-  
-  if (daysUntil > 0 && daysUntil <= thresholdDays) {
-    const priority = daysUntil <= 3 ? "high" : "medium";
-    return {
-      id: `delegation-${delegation.id}`,
-      title: "Delegation Expiring",
-      description: `Your delegation authority expires in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew to maintain access.`,
-      actionUrl: "/delegations",
-      expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
-      type: "delegation",
-      priority,
-    };
-  }
-  return null;
-}
-
-function checkHajjEligibility(isEligible: boolean): Suggestion | null {
-  if (!isEligible) return null;
-
-  // Hajj period is typically in July/August
-  // Show suggestion 6 months before (around January/February)
-  const now = new Date();
-  const currentMonth = now.getMonth(); // 0-indexed
-  
-  // Show Hajj suggestion from December through June (6 months before typical Hajj)
-  if (currentMonth >= 11 || currentMonth <= 5) {
-    return {
-      id: "hajj-eligibility",
-      title: "Hajj Registration Open",
-      description: "You are eligible for Hajj. Registration period is now open. Apply early to secure your spot.",
-      actionUrl: "/hajj-registration",
-      type: "hajj",
-      priority: "medium",
-    };
-  }
-  return null;
-}
-
-export function generateSuggestions(userId: string): Suggestion[] {
-  const users = loadUsers();
+export async function generateSuggestions(userId: number): Promise<Suggestion[]> {
   const config = loadConfig();
-  
-  const user = users[userId];
-  if (!user) {
-    return [];
-  }
-
   const suggestions: Suggestion[] = [];
 
-  // Rule 1: Check document expiries (Passport, National ID, Driving License)
-  const passportSuggestion = checkDocumentExpiry(
-    "Passport",
-    user.passportExpiry,
-    config.expiryThresholdDays,
-    "/passport-renewal"
-  );
-  if (passportSuggestion) suggestions.push(passportSuggestion);
-
-  const nationalIdSuggestion = checkDocumentExpiry(
-    "National ID",
-    user.nationalIdExpiry,
-    config.expiryThresholdDays,
-    "/national-id-renewal"
-  );
-  if (nationalIdSuggestion) suggestions.push(nationalIdSuggestion);
-
-  const drivingLicenseSuggestion = checkDocumentExpiry(
-    "Driving License",
-    user.drivingLicenseExpiry,
-    config.expiryThresholdDays,
-    "/driving-license-renewal"
-  );
-  if (drivingLicenseSuggestion) suggestions.push(drivingLicenseSuggestion);
-
-  // Rule 2: Check violation discounts
-  for (const violation of user.violations) {
-    const violationSuggestion = checkViolationDiscount(
-      violation,
-      config.violationDiscountThresholdHours
-    );
-    if (violationSuggestion) suggestions.push(violationSuggestion);
+  const passport = await storage.getPassportByUserId(userId);
+  if (passport) {
+    const daysUntil = getDaysUntil(passport.expiryDate);
+    if (daysUntil > 0 && daysUntil <= config.expiryThresholdDays) {
+      const priority = daysUntil <= 7 ? "high" : daysUntil <= 14 ? "medium" : "low";
+      suggestions.push({
+        id: `passport-${passport.id}`,
+        title: "Passport Expiring Soon",
+        description: `Your passport will expire in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew now to avoid service disruptions.`,
+        actionUrl: `/services/passport`,
+        expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
+        type: "document",
+        priority,
+        serviceId: passport.id,
+      });
+    }
   }
 
-  // Rule 3: Check appointments
-  for (const appointment of user.appointments) {
-    const appointmentSuggestion = checkAppointmentReminder(
-      appointment,
-      config.appointmentReminderHours
-    );
-    if (appointmentSuggestion) suggestions.push(appointmentSuggestion);
+  const nationalId = await storage.getNationalIdByUserId(userId);
+  if (nationalId) {
+    const daysUntil = getDaysUntil(nationalId.expiryDate);
+    if (daysUntil > 0 && daysUntil <= config.expiryThresholdDays) {
+      const priority = daysUntil <= 7 ? "high" : daysUntil <= 14 ? "medium" : "low";
+      suggestions.push({
+        id: `national-id-${nationalId.id}`,
+        title: "National ID Expiring Soon",
+        description: `Your national ID will expire in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew now to avoid service disruptions.`,
+        actionUrl: `/services/national-id`,
+        expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
+        type: "document",
+        priority,
+        serviceId: nationalId.id,
+      });
+    }
   }
 
-  // Rule 4: Check delegations
-  for (const delegation of user.delegations) {
-    const delegationSuggestion = checkDelegationExpiry(
-      delegation,
-      config.delegationExpiryDays
-    );
-    if (delegationSuggestion) suggestions.push(delegationSuggestion);
+  const drivingLicense = await storage.getDrivingLicenseByUserId(userId);
+  if (drivingLicense) {
+    const daysUntil = getDaysUntil(drivingLicense.expiryDate);
+    if (daysUntil > 0 && daysUntil <= config.expiryThresholdDays) {
+      const priority = daysUntil <= 7 ? "high" : daysUntil <= 14 ? "medium" : "low";
+      suggestions.push({
+        id: `driving-license-${drivingLicense.id}`,
+        title: "Driving License Expiring Soon",
+        description: `Your driving license will expire in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew now to avoid service disruptions.`,
+        actionUrl: `/services/driving-license`,
+        expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
+        type: "document",
+        priority,
+        serviceId: drivingLicense.id,
+      });
+    }
   }
 
-  // Rule 5: Check Hajj eligibility
-  const hajjSuggestion = checkHajjEligibility(user.hajjEligible);
-  if (hajjSuggestion) suggestions.push(hajjSuggestion);
+  const violations = await storage.getViolationsByUserId(userId);
+  for (const violation of violations) {
+    if (violation.status === "unpaid" && violation.discountExpiry) {
+      const hoursUntil = getHoursUntil(violation.discountExpiry);
+      if (hoursUntil > 0 && hoursUntil <= config.violationDiscountThresholdHours) {
+        suggestions.push({
+          id: `violation-${violation.id}`,
+          title: "Violation Discount Ending",
+          description: `A traffic violation discount expires in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}. Pay now to save.`,
+          actionUrl: `/services/violation/${violation.id}`,
+          expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
+          type: "violation",
+          priority: "high",
+          serviceId: violation.id,
+        });
+      }
+    }
+  }
 
-  // Sort by priority: high first, then medium, then low
+  const appointments = await storage.getAppointmentsByUserId(userId);
+  for (const appointment of appointments) {
+    if (appointment.status === "scheduled") {
+      const hoursUntil = getHoursUntil(appointment.appointmentDate);
+      if (hoursUntil > 0 && hoursUntil <= config.appointmentReminderHours) {
+        const appointmentDate = new Date(appointment.appointmentDate);
+        const timeString = appointmentDate.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+        suggestions.push({
+          id: `appointment-${appointment.id}`,
+          title: "Appointment Coming Up",
+          description: `You have an Absher appointment in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""} at ${timeString}.`,
+          actionUrl: `/services/appointment/${appointment.id}`,
+          expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
+          type: "appointment",
+          priority: "medium",
+          serviceId: appointment.id,
+        });
+      }
+    }
+  }
+
+  const delegations = await storage.getDelegationsByUserId(userId);
+  for (const delegation of delegations) {
+    if (delegation.status === "active") {
+      const daysUntil = getDaysUntil(delegation.expiryDate);
+      if (daysUntil > 0 && daysUntil <= config.delegationExpiryDays) {
+        const priority = daysUntil <= 3 ? "high" : "medium";
+        suggestions.push({
+          id: `delegation-${delegation.id}`,
+          title: "Delegation Expiring",
+          description: `Your delegation authority expires in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew to maintain access.`,
+          actionUrl: `/services/delegation/${delegation.id}`,
+          expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
+          type: "delegation",
+          priority,
+          serviceId: delegation.id,
+        });
+      }
+    }
+  }
+
+  const hajjStatus = await storage.getHajjStatusByUserId(userId);
+  if (hajjStatus && hajjStatus.eligible && hajjStatus.registrationStatus !== "registered") {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    if (currentMonth >= 11 || currentMonth <= 5) {
+      suggestions.push({
+        id: `hajj-${hajjStatus.id}`,
+        title: "Hajj Registration Open",
+        description: "You are eligible for Hajj. Registration period is now open. Apply early to secure your spot.",
+        actionUrl: `/services/hajj`,
+        type: "hajj",
+        priority: "medium",
+        serviceId: hajjStatus.id,
+      });
+    }
+  }
+
   const priorityOrder = { high: 0, medium: 1, low: 2 };
   suggestions.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 
   return suggestions;
-}
-
-export function getUserById(userId: string): UserData | null {
-  const users = loadUsers();
-  return users[userId] || null;
 }

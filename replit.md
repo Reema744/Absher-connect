@@ -4,11 +4,19 @@
 
 This is a dummy Absher mobile/web application that demonstrates a "Smart Suggestions" feature for a government services portal. The app displays personalized suggestion cards in a horizontal carousel at the top of the homepage, simulating how Saudi Arabia's Absher platform could recommend relevant services to users based on their documents, appointments, violations, and eligibility status.
 
-The application uses a mock data engine to generate contextual suggestions such as passport renewal reminders, traffic violation payment deadlines, appointment notifications, and Hajj registration eligibility alerts.
+The application uses a database-driven suggestion engine to generate contextual suggestions such as passport renewal reminders, traffic violation payment deadlines, appointment notifications, and Hajj registration eligibility alerts.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+## Authentication
+
+- **Login**: Users authenticate with their User ID (1-100) and password (same as User ID for demo purposes)
+- **Session Management**: Express session with memory store
+- **Protected Routes**: All API endpoints (except auth) require authentication
+
+Demo credentials: Use any user ID from 1-100 with password matching the ID (e.g., user 1, password 1)
 
 ## System Architecture
 
@@ -18,9 +26,12 @@ Preferred communication style: Simple, everyday language.
 
 **UI Component Library**: shadcn/ui components built on Radix UI primitives, providing accessible and customizable UI elements with Tailwind CSS styling.
 
-**Routing**: Wouter for lightweight client-side routing.
+**Routing**: Wouter for lightweight client-side routing with protected routes:
+- `/login` - Login page (public)
+- `/` - Home page with suggestions carousel (protected)
+- `/services/:type/:id?` - Service detail pages (protected)
 
-**State Management**: TanStack Query (React Query) for server state management, with queries configured for infinite stale time and disabled refetching to work with static mock data.
+**State Management**: TanStack Query (React Query) for server state management with authentication context.
 
 **Design System**: Material Design adapted for government services with a green primary color scheme (HSL: 150 65% 35%), following mobile-first responsive principles. The design prioritizes trust, clarity, accessibility (WCAG 2.1 AA), and efficiency.
 
@@ -29,31 +40,60 @@ Preferred communication style: Simple, everyday language.
 - Card-based layouts with consistent spacing (Tailwind units: 2, 4, 6, 8)
 - Touch-optimized interface with minimum 48px (h-12) touch targets
 - Fixed header navigation and bottom mobile navigation
+- Service detail pages with "Start Service" action button
 
 ### Backend Architecture
 
 **Server Framework**: Express.js on Node.js with TypeScript.
 
-**API Design**: RESTful JSON API with two primary endpoints:
+**Database**: PostgreSQL with Drizzle ORM
+- `users` - 100 users with ID, national ID, password, name, email, phone
+- `passports` - Passport records with expiry dates
+- `national_ids` - National ID records with expiry dates
+- `driving_licenses` - Driving license records with expiry dates
+- `violations` - Traffic violations with discount expiry
+- `appointments` - Scheduled appointments
+- `delegations` - Delegation authorities with expiry
+- `hajj_status` - Hajj eligibility and registration status
+
+**API Design**: RESTful JSON API with authentication:
+
+Auth endpoints:
+- `POST /api/auth/login` - Login with userId and password
+- `POST /api/auth/logout` - Logout and clear session
+- `GET /api/auth/me` - Get current user
+
+Protected endpoints:
 - `GET /api/suggestions/:userId` - Returns personalized suggestions array
 - `GET /api/users/:userId` - Returns user profile data
+- `GET /api/services/passport/:userId` - Passport details
+- `GET /api/services/national-id/:userId` - National ID details
+- `GET /api/services/driving-license/:userId` - Driving license details
+- `GET /api/services/violations/:userId` - List of violations
+- `GET /api/services/violations/:userId/:violationId` - Single violation
+- `GET /api/services/appointments/:userId` - List of appointments
+- `GET /api/services/appointments/:userId/:appointmentId` - Single appointment
+- `GET /api/services/delegations/:userId` - List of delegations
+- `GET /api/services/delegations/:userId/:delegationId` - Single delegation
+- `GET /api/services/hajj/:userId` - Hajj status
 
 **Suggestion Engine**: Server-side business logic (`server/suggestions.ts`) that analyzes user data against configuration thresholds to generate prioritized suggestions:
-- Document expiry checking (passport, national ID, driving license)
-- Traffic violation discount deadlines
-- Appointment reminders
-- Delegation expiry tracking
+- Document expiry checking (passport, national ID, driving license) - 30 day threshold
+- Traffic violation discount deadlines - 72 hour threshold
+- Appointment reminders - 24 hour threshold
+- Delegation expiry tracking - 7 day threshold
 - Service eligibility (Hajj registration)
-
-**Data Source**: Static JSON files in the `data/` directory serve as mock databases:
-- `users.json` - User profiles with document dates, violations, appointments
-- `config.json` - Configurable thresholds for suggestion triggers
 
 **Type Safety**: Shared TypeScript schemas using Zod for runtime validation across client and server (`shared/schema.ts`).
 
 ### Build & Deployment
 
 **Development**: Vite dev server with HMR (Hot Module Replacement) proxied through Express for API integration.
+
+**Database Setup**:
+- Schema defined in `shared/schema.ts` using Drizzle ORM
+- Push schema changes with `npm run db:push`
+- Seed database with `npx tsx server/seed.ts`
 
 **Production Build**: 
 - Client: Vite builds optimized static assets to `dist/public`
@@ -81,10 +121,11 @@ Preferred communication style: Simple, everyday language.
 ### Carousel & Interactions
 - **Embla Carousel React**: Touch-friendly carousel with auto-play capabilities
 
-### Database (Configured but not actively used)
-- **Drizzle ORM**: Type-safe PostgreSQL ORM configured for future database integration
+### Database
+- **Drizzle ORM**: Type-safe PostgreSQL ORM
 - **@neondatabase/serverless**: Neon serverless Postgres driver
-- **connect-pg-simple**: PostgreSQL session store for Express (configured for future use)
+- **express-session**: Session management for authentication
+- **memorystore**: In-memory session store
 
 ### Routing & Forms
 - **Wouter**: Lightweight React router (~1KB)
@@ -102,4 +143,16 @@ Preferred communication style: Simple, everyday language.
 - **nanoid**: Unique ID generation
 - **cmdk**: Command menu component (included but not currently used)
 
-**Note**: The application is configured with Drizzle ORM and PostgreSQL connection settings (`drizzle.config.ts`, `DATABASE_URL` environment variable), but currently operates entirely on mock JSON data. Database integration can be added later by implementing the storage interface defined in `server/storage.ts`.
+## Key Files
+
+- `shared/schema.ts` - Database schema and type definitions
+- `server/db.ts` - Database connection
+- `server/storage.ts` - Data access layer (DatabaseStorage)
+- `server/routes.ts` - API routes with authentication
+- `server/suggestions.ts` - Suggestion generation logic
+- `server/seed.ts` - Database seeding script
+- `client/src/hooks/use-auth.tsx` - Authentication context and hooks
+- `client/src/pages/Login.tsx` - Login page
+- `client/src/pages/Home.tsx` - Main dashboard
+- `client/src/pages/ServiceDetail.tsx` - Service detail pages
+- `data/config.json` - Suggestion engine configuration thresholds

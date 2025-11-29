@@ -1,6 +1,9 @@
 import type { Suggestion } from "@shared/schema";
 
-const API_BASE = "http://localhost:5000";
+function getApiBase(): string {
+  const port = process.env.PORT || 5000;
+  return `http://127.0.0.1:${port}`;
+}
 
 interface DocumentData {
   documentType: string;
@@ -65,7 +68,8 @@ function determinePriority(daysToExpiry: number): "high" | "medium" | "low" {
 
 async function fetchFromApi(endpoint: string, userId: number) {
   try {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const apiBase = getApiBase();
+    const response = await fetch(`${apiBase}${endpoint}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });

@@ -1,9 +1,5 @@
 import type { Suggestion } from "@shared/schema";
-
-function getApiBase(): string {
-  const port = process.env.PORT || 5000;
-  return `http://127.0.0.1:${port}`;
-}
+import { storage } from "./storage";
 
 interface DocumentData {
   documentType: string;
@@ -66,26 +62,6 @@ function determinePriority(daysToExpiry: number): "high" | "medium" | "low" {
   return "low";
 }
 
-async function fetchFromApi(endpoint: string, userId: number) {
-  try {
-    const apiBase = getApiBase();
-    const response = await fetch(`${apiBase}${endpoint}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (!response.ok) {
-      console.warn(`API error for ${endpoint}: ${response.status}`);
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`Error fetching ${endpoint}:`, error);
-    return null;
-  }
-}
-
 export async function generateSuggestions(userId: number): Promise<Suggestion[]> {
   const suggestions: Suggestion[] = [];
 
@@ -93,7 +69,7 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   const documentsToCheck: DocumentData[] = [];
 
   // Fetch passport
-  const passport = await fetchFromApi(`/api/internal/services/passport/${userId}`, userId);
+  const passport = await storage.getPassportByUserId(userId);
   if (passport?.expiryDate) {
     const daysUntil = getDaysUntil(passport.expiryDate);
     if (daysUntil > 0) {
@@ -109,7 +85,7 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   }
 
   // Fetch national ID
-  const nationalId = await fetchFromApi(`/api/internal/services/national-id/${userId}`, userId);
+  const nationalId = await storage.getNationalIdByUserId(userId);
   if (nationalId?.expiryDate) {
     const daysUntil = getDaysUntil(nationalId.expiryDate);
     if (daysUntil > 0) {
@@ -125,10 +101,7 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   }
 
   // Fetch driving license
-  const drivingLicense = await fetchFromApi(
-    `/api/internal/services/driving-license/${userId}`,
-    userId
-  );
+  const drivingLicense = await storage.getDrivingLicenseByUserId(userId);
   if (drivingLicense?.expiryDate) {
     const daysUntil = getDaysUntil(drivingLicense.expiryDate);
     if (daysUntil > 0) {
@@ -161,7 +134,7 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   }
 
   // Fetch violations
-  const violations = await fetchFromApi(`/api/internal/services/violations/${userId}`, userId);
+  const violations = await storage.getViolationsByUserId(userId);
   if (Array.isArray(violations)) {
     for (const violation of violations) {
       if (violation.status === "unpaid" && violation.discountExpiry) {
@@ -183,7 +156,7 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   }
 
   // Fetch appointments
-  const appointments = await fetchFromApi(`/api/internal/services/appointments/${userId}`, userId);
+  const appointments = await storage.getAppointmentsByUserId(userId);
   if (Array.isArray(appointments)) {
     for (const appointment of appointments) {
       if (appointment.status === "scheduled") {
@@ -211,7 +184,7 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   }
 
   // Fetch delegations
-  const delegations = await fetchFromApi(`/api/internal/services/delegations/${userId}`, userId);
+  const delegations = await storage.getDelegationsByUserId(userId);
   if (Array.isArray(delegations)) {
     for (const delegation of delegations) {
       if (delegation.status === "active") {
@@ -234,7 +207,7 @@ export async function generateSuggestions(userId: number): Promise<Suggestion[]>
   }
 
   // Fetch Hajj status
-  const hajjStatus = await fetchFromApi(`/api/internal/services/hajj/${userId}`, userId);
+  const hajjStatus = await storage.getHajjStatusByUserId(userId);
   if (hajjStatus && hajjStatus.eligible && hajjStatus.registrationStatus !== "registered") {
     const now = new Date();
     const currentMonth = now.getMonth();

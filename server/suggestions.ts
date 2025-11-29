@@ -1,67 +1,226 @@
+import { storage } from "./storage";
 import type { Suggestion } from "@shared/schema";
 
-function formatDateToYYYYMMDD(date: Date | string): string {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+interface DocumentData {
+  documentType: string;
+  daysToExpiry: number;
+  documentImportance: "HIGH" | "MEDIUM" | "LOW";
+  hasLateRenewalBefore: boolean;
+  serviceId?: number;
+  actionUrl: string;
 }
 
-function getDocumentTypeFromService(documentType: string): string {
-  const mapping: { [key: string]: string } = {
-    passport: "Passport",
-    national_id: "National ID",
-    driving_license: "Driving License",
-  };
-  return mapping[documentType] || documentType;
+/**
+ * AI Notification Model - ported from Python Random Forest classifier
+ * This implements the same scoring logic used to train the model
+ */
+function shouldNotify(doc: DocumentData): boolean {
+  let score = 0;
+
+  // Very close to expiry
+  if (doc.daysToExpiry <= 7) {
+    score += 3;
+  } else if (doc.daysToExpiry <= 30) {
+    score += 2;
+  } else if (doc.daysToExpiry <= 60) {
+    score += 1;
+  }
+
+  // More important documents get higher weight
+  if (doc.documentImportance === "HIGH") {
+    score += 2;
+  } else if (doc.documentImportance === "MEDIUM") {
+    score += 1;
+  }
+
+  // If user has late renewals, be more aggressive
+  if (doc.hasLateRenewalBefore) {
+    score += 1;
+  }
+
+  // Threshold for notification (same as Python model)
+  return score >= 3;
 }
 
-function mapServiceToActionUrl(documentType: string, serviceId?: string): string {
-  const mapping: { [key: string]: string } = {
-    Passport: "/services/passport",
-    "National ID": "/services/national-id",
-    "Driving License": "/services/driving-license",
-  };
-  return mapping[documentType] || "/services/dashboard";
+function getDaysUntil(dateString: string | Date): number {
+  const targetDate = new Date(dateString);
+  const now = new Date();
+  const diffTime = targetDate.getTime() - now.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+function getHoursUntil(dateString: string | Date): number {
+  const targetDate = new Date(dateString);
+  const now = new Date();
+  const diffTime = targetDate.getTime() - now.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60));
+}
+
+function determinePriority(daysToExpiry: number): "high" | "medium" | "low" {
+  if (daysToExpiry <= 7) return "high";
+  if (daysToExpiry <= 14) return "medium";
+  return "low";
 }
 
 export async function generateSuggestions(userId: number): Promise<Suggestion[]> {
-  const aiApiUrl = process.env.AI_SUGGESTIONS_API_URL || "http://localhost:8000";
+  const suggestions: Suggestion[] = [];
 
-  try {
-    const response = await fetch(`${aiApiUrl}/user-notifications`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId }),
-    });
+  // Collect all documents to analyze
+  const documentsToCheck: DocumentData[] = [];
 
-    if (!response.ok) {
-      console.error(`AI API error: ${response.status}`);
-      return [];
+  // Fetch passport
+  const passport = await storage.getPassportByUserId(userId);
+  if (passport) {
+    const daysUntil = getDaysUntil(passport.expiryDate);
+    if (daysUntil > 0) {
+      documentsToCheck.push({
+        documentType: "Passport",
+        daysToExpiry: daysUntil,
+        documentImportance: daysUntil <= 30 ? "HIGH" : "MEDIUM",
+        hasLateRenewalBefore: daysUntil < 0,
+        serviceId: passport.id,
+        actionUrl: "/services/passport",
+      });
     }
-
-    const data = await response.json();
-    const aiNotifications = data.notifications || [];
-
-    const suggestions: Suggestion[] = aiNotifications.map(
-      (notification: {
-        document_type: string;
-        message: string;
-        action_url: string;
-      }) => ({
-        id: `ai-${notification.document_type}-${Date.now()}`,
-        title: `${notification.document_type} Expiring Soon`,
-        description: notification.message,
-        actionUrl: mapServiceToActionUrl(notification.document_type),
-        type: "document",
-        priority: "medium" as const,
-      })
-    );
-
-    return suggestions;
-  } catch (error) {
-    console.error("Failed to fetch AI suggestions:", error);
-    return [];
   }
+
+  // Fetch national ID
+  const nationalId = await storage.getNationalIdByUserId(userId);
+  if (nationalId) {
+    const daysUntil = getDaysUntil(nationalId.expiryDate);
+    if (daysUntil > 0) {
+      documentsToCheck.push({
+        documentType: "National ID",
+        daysToExpiry: daysUntil,
+        documentImportance: "HIGH", // National ID is always high importance
+        hasLateRenewalBefore: daysUntil < 0,
+        serviceId: nationalId.id,
+        actionUrl: "/services/national-id",
+      });
+    }
+  }
+
+  // Fetch driving license
+  const drivingLicense = await storage.getDrivingLicenseByUserId(userId);
+  if (drivingLicense) {
+    const daysUntil = getDaysUntil(drivingLicense.expiryDate);
+    if (daysUntil > 0) {
+      documentsToCheck.push({
+        documentType: "Driving License",
+        daysToExpiry: daysUntil,
+        documentImportance: daysUntil <= 30 ? "HIGH" : "MEDIUM",
+        hasLateRenewalBefore: daysUntil < 0,
+        serviceId: drivingLicense.id,
+        actionUrl: "/services/driving-license",
+      });
+    }
+  }
+
+  // Run AI model on each document
+  for (const doc of documentsToCheck) {
+    if (shouldNotify(doc)) {
+      const priority = determinePriority(doc.daysToExpiry);
+      suggestions.push({
+        id: `ai-${doc.documentType.toLowerCase().replace(/\s+/g, "-")}-${doc.serviceId || Date.now()}`,
+        title: `${doc.documentType} Expiring Soon`,
+        description: `Your ${doc.documentType} will expire in ${doc.daysToExpiry} day${doc.daysToExpiry !== 1 ? "s" : ""}. Would you like to renew it now?`,
+        actionUrl: doc.actionUrl,
+        expiryDate: `${doc.daysToExpiry} day${doc.daysToExpiry !== 1 ? "s" : ""}`,
+        type: "document",
+        priority,
+        serviceId: doc.serviceId,
+      });
+    }
+  }
+
+  // Also check violations with discount expiring (high urgency)
+  const violations = await storage.getViolationsByUserId(userId);
+  for (const violation of violations) {
+    if (violation.status === "unpaid" && violation.discountExpiry) {
+      const hoursUntil = getHoursUntil(violation.discountExpiry);
+      if (hoursUntil > 0 && hoursUntil <= 72) {
+        suggestions.push({
+          id: `violation-${violation.id}`,
+          title: "Violation Discount Ending",
+          description: `A traffic violation discount expires in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}. Pay now to save.`,
+          actionUrl: `/services/violation/${violation.id}`,
+          expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
+          type: "violation",
+          priority: "high",
+          serviceId: violation.id,
+        });
+      }
+    }
+  }
+
+  // Check upcoming appointments
+  const appointments = await storage.getAppointmentsByUserId(userId);
+  for (const appointment of appointments) {
+    if (appointment.status === "scheduled") {
+      const hoursUntil = getHoursUntil(appointment.appointmentDate);
+      if (hoursUntil > 0 && hoursUntil <= 24) {
+        const appointmentDate = new Date(appointment.appointmentDate);
+        const timeString = appointmentDate.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+        suggestions.push({
+          id: `appointment-${appointment.id}`,
+          title: "Appointment Coming Up",
+          description: `You have an Absher appointment in ${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""} at ${timeString}.`,
+          actionUrl: `/services/appointment/${appointment.id}`,
+          expiryDate: `${hoursUntil} hour${hoursUntil !== 1 ? "s" : ""}`,
+          type: "appointment",
+          priority: "medium",
+          serviceId: appointment.id,
+        });
+      }
+    }
+  }
+
+  // Check expiring delegations
+  const delegations = await storage.getDelegationsByUserId(userId);
+  for (const delegation of delegations) {
+    if (delegation.status === "active") {
+      const daysUntil = getDaysUntil(delegation.expiryDate);
+      if (daysUntil > 0 && daysUntil <= 7) {
+        const priority = daysUntil <= 3 ? "high" : "medium";
+        suggestions.push({
+          id: `delegation-${delegation.id}`,
+          title: "Delegation Expiring",
+          description: `Your delegation authority expires in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}. Renew to maintain access.`,
+          actionUrl: `/services/delegation/${delegation.id}`,
+          expiryDate: `${daysUntil} day${daysUntil !== 1 ? "s" : ""}`,
+          type: "delegation",
+          priority,
+          serviceId: delegation.id,
+        });
+      }
+    }
+  }
+
+  // Check Hajj eligibility
+  const hajjStatus = await storage.getHajjStatusByUserId(userId);
+  if (hajjStatus && hajjStatus.eligible && hajjStatus.registrationStatus !== "registered") {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    if (currentMonth >= 11 || currentMonth <= 5) {
+      suggestions.push({
+        id: `hajj-${hajjStatus.id}`,
+        title: "Hajj Registration Open",
+        description: "You are eligible for Hajj. Registration period is now open. Apply early to secure your spot.",
+        actionUrl: `/services/hajj`,
+        type: "hajj",
+        priority: "medium",
+        serviceId: hajjStatus.id,
+      });
+    }
+  }
+
+  // Sort by priority (high first)
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  suggestions.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
+  return suggestions;
 }

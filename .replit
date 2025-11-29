@@ -1,10 +1,10 @@
-modules = ["nodejs-20", "web", "postgresql-16"]
+modules = ["nodejs-20", "web", "postgresql-16", "python-3.11"]
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["python312", "python312Packages.pip"]
+packages = ["glibcLocales", "python312", "python312Packages.pip", "gcc", "libstdcxx5", "python312Packages.numpy", "python312Packages.pandas", "python312Packages.scikit-learn", "python312Packages.uvicorn", "python312Packages.fastapi", "python312Packages.requests"]
 
 [deployment]
 deploymentTarget = "autoscale"
@@ -18,10 +18,6 @@ externalPort = 80
 [[ports]]
 localPort = 32909
 externalPort = 3002
-
-[[ports]]
-localPort = 36989
-externalPort = 4200
 
 [[ports]]
 localPort = 37741
@@ -58,3 +54,9 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[userenv]
+
+[userenv.shared]
+AI_SUGGESTIONS_API_URL = "http://localhost:8000"
+ABSHER_API_URL = "http://localhost:5000"

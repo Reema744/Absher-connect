@@ -48,27 +48,25 @@ export default function Home() {
           )}
         </section>
 
-        <section aria-label="Smart Suggestions">
-          <h2
-            className="text-lg font-semibold text-foreground mb-4"
-            data-testid="text-suggestions-title"
-          >
-            Smart Suggestions
-          </h2>
-          {isSuggestionsLoading ? (
-            <CarouselSkeleton />
-          ) : suggestions.length > 0 ? (
-            <SuggestionsCarousel
-              suggestions={suggestions}
-              autoSlideInterval={5000}
-              onAction={handleSuggestionAction}
-            />
-          ) : (
-            <div className="p-6 text-center text-muted-foreground bg-card rounded-lg border" data-testid="text-no-suggestions">
-              No suggestions at this time. All your documents and services are up to date!
-            </div>
-          )}
-        </section>
+        {(isSuggestionsLoading || suggestions.length > 0) && (
+          <section aria-label="Smart Suggestions">
+            <h2
+              className="text-lg font-semibold text-foreground mb-4"
+              data-testid="text-suggestions-title"
+            >
+              Smart Suggestions
+            </h2>
+            {isSuggestionsLoading ? (
+              <CarouselSkeleton />
+            ) : (
+              <SuggestionsCarousel
+                suggestions={suggestions}
+                autoSlideInterval={5000}
+                onAction={handleSuggestionAction}
+              />
+            )}
+          </section>
+        )}
 
         <section aria-label="Dashboard">
           {!user ? (

@@ -13,26 +13,26 @@ export default function SuggestionCard({ suggestion, onAction, userName }: Sugge
   const firstName = userName?.split(" ")[0] || "User";
   return (
     <Card
-      className="flex-shrink-0 w-96 p-6 flex flex-col gap-4 bg-green-50 border-2 border-green-200"
+      className="flex-shrink-0 w-96 p-3 flex flex-col gap-2 bg-green-50 border-2 border-green-200"
       data-testid={`card-suggestion-${suggestion.id}`}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-4 flex-1">
-          <div className="h-12 w-12 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
-            <MapPin className="h-6 w-6 text-white" />
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1">
+          <div className="h-10 w-10 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
+            <MapPin className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-teal-700 mb-1" data-testid={`text-suggestion-label-${suggestion.id}`}>
+            <p className="text-xs font-medium text-teal-700" data-testid={`text-suggestion-label-${suggestion.id}`}>
               Smart Suggestion from Absher Connect
             </p>
             <h3
-              className="text-2xl font-bold text-gray-900 mb-2"
+              className="text-lg font-bold text-gray-900"
               data-testid={`text-suggestion-title-${suggestion.id}`}
             >
               Welcome, {firstName}
             </h3>
             <p
-              className="text-base text-gray-700"
+              className="text-sm text-gray-700"
               data-testid={`text-suggestion-description-${suggestion.id}`}
             >
               {suggestion.description}
@@ -44,12 +44,12 @@ export default function SuggestionCard({ suggestion, onAction, userName }: Sugge
           data-testid={`button-close-suggestion-${suggestion.id}`}
           aria-label="Close suggestion"
         >
-          <X className="h-6 w-6" />
+          <X className="h-5 w-5" />
         </button>
       </div>
 
       <Button
-        className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-full py-2"
+        className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-full py-1 text-sm"
         onClick={() => {
           console.log(`Action triggered: ${suggestion.actionUrl}`);
           onAction?.(suggestion.actionUrl);

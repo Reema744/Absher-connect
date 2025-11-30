@@ -1,7 +1,9 @@
-import { Menu, Bell, Settings } from "lucide-react";
+import { Bell, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SettingsPanel from "./SettingsPanel";
+import absherLogo from "@assets/Absher.svg_1764525255245.png";
+import moiLogo from "@assets/png-clipart-riyadh-ministry-of-interior-interior-ministry-jeddah-others-logo-national-security_1764525255245.png";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -17,19 +19,21 @@ export default function Header({ onMenuClick }: HeaderProps) {
   return (
     <>
       <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
-        <div className="px-4 py-4 max-w-6xl mx-auto">
+        <div className="px-4 py-3 max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="text-gray-600"
-                onClick={onMenuClick}
-                data-testid="button-menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-              <h1 className="text-xl font-bold text-gray-900" data-testid="text-app-title">Absher</h1>
+              <img
+                src={absherLogo}
+                alt="Absher"
+                className="h-10 w-auto"
+                data-testid="img-absher-logo"
+              />
+              <img
+                src={moiLogo}
+                alt="Ministry of Interior"
+                className="h-10 w-auto"
+                data-testid="img-moi-logo"
+              />
             </div>
 
             <div className="flex items-center gap-2">

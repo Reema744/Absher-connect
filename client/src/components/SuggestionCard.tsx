@@ -13,7 +13,7 @@ export default function SuggestionCard({ suggestion, onAction, userName }: Sugge
   const firstName = userName?.split(" ")[0] || "User";
   return (
     <Card
-      className="flex-shrink-0 w-96 p-3 flex flex-col gap-2 bg-green-50 border-2 border-green-200"
+      className="flex-shrink-0 w-32 p-3 flex flex-col gap-2 bg-green-50 border-2 border-green-200 ml-auto"
       data-testid={`card-suggestion-${suggestion.id}`}
     >
       <div className="flex items-start justify-between gap-3">

@@ -48,16 +48,18 @@ export default function SuggestionCard({ suggestion, onAction, userName }: Sugge
         </button>
       </div>
 
-      <Button
-        className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-full py-1 text-sm"
-        onClick={() => {
-          console.log(`Action triggered: ${suggestion.actionUrl}`);
-          onAction?.(suggestion.actionUrl);
-        }}
-        data-testid={`button-action-${suggestion.id}`}
-      >
-        View Details
-      </Button>
+      <div className="flex justify-end">
+        <Button
+          className="w-1/3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-full py-1 text-sm"
+          onClick={() => {
+            console.log(`Action triggered: ${suggestion.actionUrl}`);
+            onAction?.(suggestion.actionUrl);
+          }}
+          data-testid={`button-action-${suggestion.id}`}
+        >
+          View Details
+        </Button>
+      </div>
     </Card>
   );
 }

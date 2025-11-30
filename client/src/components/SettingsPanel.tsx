@@ -1,21 +1,17 @@
-import { X, Bell, Lock, Globe, LogOut } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface SettingsPanelProps {
   onClose: () => void;
 }
 
 export default function SettingsPanel({ onClose }: SettingsPanelProps) {
-  const { logout } = useAuth();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [language, setLanguage] = useState("en");
-
-  const handleLogout = async () => {
-    await logout();
-    onClose();
-  };
+  const { user } = useAuth();
+  const [smartSuggestions, setSmartSuggestions] = useState(true);
 
   return (
     <div
@@ -24,11 +20,11 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
       data-testid="settings-overlay"
     >
       <div
-        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-lg animate-in slide-in-from-bottom"
+        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-lg animate-in slide-in-from-bottom max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         data-testid="settings-panel"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
           <h2 className="text-lg font-semibold text-gray-900">Settings</h2>
           <Button
             size="icon"
@@ -40,74 +36,106 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
           </Button>
         </div>
 
-        <div className="px-6 py-4 space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Bell className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium text-gray-900">Notifications</p>
-                <p className="text-sm text-gray-600">Receive service updates</p>
+        <div className="px-6 py-6 space-y-6">
+          {/* ACCOUNT DETAILS SECTION */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
+              Account Details
+            </p>
+            <div className="space-y-3">
+              {/* User Profile */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover-elevate cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarFallback className="bg-primary text-white">
+                      {user?.name
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {user?.name?.toUpperCase()}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      ID No. {user?.nationalId}
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </div>
+
+              {/* Absher Authenticator */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover-elevate cursor-pointer">
+                <p className="font-semibold text-gray-900">Absher Authenticator</p>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
             </div>
-            <input
-              type="checkbox"
-              checked={notificationsEnabled}
-              onChange={(e) => setNotificationsEnabled(e.target.checked)}
-              className="w-5 h-5"
-              data-testid="checkbox-notifications"
-            />
           </div>
 
-          <div className="border-t border-gray-200 pt-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Lock className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium text-gray-900">Privacy & Security</p>
-                <p className="text-sm text-gray-600">Manage your account security</p>
+          {/* PRIVACY AND SECURITY SECTION */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
+              Privacy and Security
+            </p>
+            <div className="space-y-3">
+              {/* Trusted Devices */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <p className="font-semibold text-gray-900">Trusted Devices</p>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </div>
+
+              {/* Parental Consent */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <p className="font-semibold text-gray-900">Parental Consent</p>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </div>
+
+              {/* Use Passcode */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-semibold text-gray-900">Use Passcode</p>
+                  <Switch disabled checked={true} data-testid="toggle-passcode" />
+                </div>
+                <p className="text-xs text-gray-600">
+                  Passcode is required to access your Digital Documents and Absher
+                  Authenticator while logged out, and allows you to stay logged in for
+                  longer.
+                </p>
+              </div>
+
+              {/* Smart Suggestions from Absher Connect */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-semibold text-gray-900">
+                    Smart Suggestions from Absher Connect
+                  </p>
+                  <Switch
+                    checked={smartSuggestions}
+                    onCheckedChange={setSmartSuggestions}
+                    data-testid="toggle-smart-suggestions"
+                  />
+                </div>
+                <p className="text-xs text-gray-600">
+                  Receive automated service recommendations based on your profile and
+                  activity.
+                </p>
+              </div>
+
+              {/* Blur images */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-semibold text-gray-900">Blur images</p>
+                  <Switch disabled checked={true} data-testid="toggle-blur-images" />
+                </div>
               </div>
             </div>
-            <Button variant="outline" className="w-full" data-testid="button-manage-security">
-              Manage Settings
-            </Button>
           </div>
 
-          <div className="border-t border-gray-200 pt-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Globe className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium text-gray-900">Language</p>
-                <p className="text-sm text-gray-600">Choose your preferred language</p>
-              </div>
-            </div>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-              data-testid="select-language"
-            >
-              <option value="en">English</option>
-              <option value="ar">العربية</option>
-            </select>
-          </div>
-
-          <div className="border-t border-gray-200 pt-6 space-y-3">
-            <Button
-              onClick={onClose}
-              className="w-full"
-              data-testid="button-save-settings"
-            >
-              Done
-            </Button>
-            <Button
-              onClick={handleLogout}
-              variant="destructive"
-              className="w-full"
-              data-testid="button-logout"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
+          {/* Footer spacing */}
+          <div className="pb-4" />
         </div>
       </div>
     </div>

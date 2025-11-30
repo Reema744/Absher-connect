@@ -21,7 +21,7 @@ export default function Header({ onMenuClick, onSmartSuggestionsChange }: Header
   return (
     <>
       <header className="sticky top-0 z-50 w-full">
-        <div className="px-4 py-3 max-w-6xl mx-auto">
+        <div className="px-4 py-0 max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img

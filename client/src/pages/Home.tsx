@@ -69,11 +69,11 @@ export default function Home() {
             <h2 className="text-lg font-semibold text-gray-900">My Digital Documents</h2>
             <button className="text-sm text-primary font-medium">See All</button>
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="flex gap-4 mb-4 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             {["Citizen ID", "Passport", "Driver License"].map((docName) => (
               <div
                 key={docName}
-                className="bg-gradient-to-l from-green-200 to-green-50 rounded-lg p-4 aspect-square flex flex-col justify-between relative overflow-hidden"
+                className="bg-gradient-to-l from-green-200 to-green-50 rounded-lg p-4 flex-shrink-0 w-1/2 aspect-video flex flex-col justify-between relative overflow-hidden"
                 data-testid={`card-document-${docName}`}
               >
                 <div>
@@ -81,8 +81,8 @@ export default function Home() {
                     {docName}
                   </p>
                 </div>
-                <div className="absolute bottom-2 right-2 opacity-40">
-                  <img src={moiLogo} alt="MOI" className="h-8 w-8" data-testid={`img-moi-logo-${docName}`} />
+                <div className="absolute -bottom-2 -right-2 opacity-30">
+                  <img src={moiLogo} alt="MOI" className="h-24 w-24" data-testid={`img-moi-logo-${docName}`} />
                 </div>
               </div>
             ))}

@@ -9,6 +9,7 @@ import DashboardGrid from "@/components/DashboardGrid";
 import MobileNav from "@/components/MobileNav";
 import { CarouselSkeleton, ServiceGridSkeleton } from "@/components/LoadingSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
+import moiLogo from "@assets/ministry-of-interior-logo-png_seeklogo-455595_1764525526112.png";
 import type { Suggestion } from "@shared/schema";
 
 export default function Home() {
@@ -68,21 +69,23 @@ export default function Home() {
             <h2 className="text-lg font-semibold text-gray-900">My Digital Documents</h2>
             <button className="text-sm text-primary font-medium">See All</button>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="bg-green-100 rounded-lg p-4 aspect-square flex items-center justify-center">
-              <div className="text-green-700 opacity-30">
-                <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                </svg>
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            {["Citizen ID", "Passport", "Driver License"].map((docName) => (
+              <div
+                key={docName}
+                className="bg-gradient-to-l from-green-200 to-green-50 rounded-lg p-4 aspect-square flex flex-col justify-between relative overflow-hidden"
+                data-testid={`card-document-${docName}`}
+              >
+                <div>
+                  <p className="text-sm font-semibold text-gray-900" data-testid={`text-document-name-${docName}`}>
+                    {docName}
+                  </p>
+                </div>
+                <div className="absolute bottom-2 right-2 opacity-40">
+                  <img src={moiLogo} alt="MOI" className="h-8 w-8" data-testid={`img-moi-logo-${docName}`} />
+                </div>
               </div>
-            </div>
-            <div className="bg-green-100 rounded-lg p-4 aspect-square flex items-center justify-center">
-              <div className="text-green-700 opacity-30">
-                <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                </svg>
-              </div>
-            </div>
+            ))}
           </div>
           <div className="flex items-start gap-2 text-xs text-blue-600 bg-blue-50 p-3 rounded-lg">
             <span className="text-lg">●</span>

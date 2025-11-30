@@ -31,7 +31,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
               <img
                 src={moiLogo}
                 alt="Ministry of Interior"
-                className="h-10 w-auto"
+                className="h-10 w-auto bg-transparent"
+                style={{ mixBlendMode: "multiply" }}
                 data-testid="img-moi-logo"
               />
             </div>

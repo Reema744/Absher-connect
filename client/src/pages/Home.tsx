@@ -30,13 +30,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
       <Header onMenuClick={() => {}} />
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         <section aria-label="User Profile">
           {!user ? (
-            <div className="flex items-center gap-4 p-4 rounded-lg border border-card-border bg-card">
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-gray-200 bg-white">
               <Skeleton className="h-14 w-14 rounded-full" />
               <div className="space-y-2">
                 <Skeleton className="h-3 w-24" />
@@ -51,7 +51,7 @@ export default function Home() {
         {(isSuggestionsLoading || suggestions.length > 0) && (
           <section aria-label="Smart Suggestions">
             <h2
-              className="text-lg font-semibold text-foreground mb-4"
+              className="text-lg font-semibold text-gray-900 mb-4"
               data-testid="text-suggestions-title"
             >
               Smart Suggestions
@@ -67,6 +67,24 @@ export default function Home() {
             )}
           </section>
         )}
+
+        <section aria-label="My Digital Documents" className="bg-white rounded-lg p-4 border border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">My Digital Documents</h2>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span className="text-sm text-gray-700">Passport</span>
+              <span className="text-xs text-gray-500">Expires in 45 days</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span className="text-sm text-gray-700">National ID</span>
+              <span className="text-xs text-gray-500">Valid</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <span className="text-sm text-gray-700">Driving License</span>
+              <span className="text-xs text-gray-500">Expires in 120 days</span>
+            </div>
+          </div>
+        </section>
 
         <section aria-label="Dashboard">
           {!user ? (

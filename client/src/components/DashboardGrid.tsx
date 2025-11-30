@@ -16,7 +16,7 @@ const services = [
   { id: "national-id", icon: CreditCard, label: "National ID" },
   { id: "appointments", icon: Calendar, label: "Appointments" },
   { id: "delegations", icon: Users, label: "Delegations" },
-  { id: "traffic", icon: Car, label: "Traffic" },
+  { id: "driving-license", icon: Car, label: "My Vehicles" },
   { id: "civil-affairs", icon: Building2, label: "Civil Affairs" },
   { id: "travel", icon: Plane, label: "Travel" },
   { id: "security", icon: Shield, label: "Security" },
@@ -30,7 +30,7 @@ export default function DashboardGrid({ onServiceClick }: DashboardGridProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-foreground" data-testid="text-services-title">
-        Services
+        Quick Access
       </h2>
       <div
         className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4"

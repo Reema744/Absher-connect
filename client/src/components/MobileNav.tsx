@@ -1,4 +1,4 @@
-import { Home, FileText, Calendar, User } from "lucide-react";
+import { Home, FileText, MoreHorizontal } from "lucide-react";
 
 interface MobileNavProps {
   activeTab?: string;
@@ -7,9 +7,8 @@ interface MobileNavProps {
 
 const navItems = [
   { id: "home", icon: Home, label: "Home" },
-  { id: "services", icon: FileText, label: "Services" },
-  { id: "appointments", icon: Calendar, label: "Appointments" },
-  { id: "profile", icon: User, label: "Profile" },
+  { id: "services", icon: FileText, label: "My Services" },
+  { id: "other", icon: MoreHorizontal, label: "Other Services" },
 ];
 
 export default function MobileNav({ activeTab = "home", onTabChange }: MobileNavProps) {

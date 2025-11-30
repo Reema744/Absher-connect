@@ -50,12 +50,6 @@ export default function Home() {
 
         {(isSuggestionsLoading || suggestions.length > 0) && (
           <section aria-label="Smart Suggestions">
-            <h2
-              className="text-lg font-semibold text-gray-900 mb-4"
-              data-testid="text-suggestions-title"
-            >
-              Smart Suggestions
-            </h2>
             {isSuggestionsLoading ? (
               <CarouselSkeleton />
             ) : (

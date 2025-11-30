@@ -1,9 +1,10 @@
-import { X, ChevronRight, LogOut } from "lucide-react";
+import { X, ChevronRight, LogOut, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import DemoPanel from "./DemoPanel";
 
 interface SettingsPanelProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ interface SettingsPanelProps {
 
 export default function SettingsPanel({ onClose, onSmartSuggestionsChange }: SettingsPanelProps) {
   const { user, logout } = useAuth();
+  const [showDemoPanel, setShowDemoPanel] = useState(false);
   const [smartSuggestions, setSmartSuggestions] = useState(() => {
     const saved = localStorage.getItem("smartSuggestionsEnabled");
     return saved !== null ? JSON.parse(saved) : true;
@@ -150,6 +152,17 @@ export default function SettingsPanel({ onClose, onSmartSuggestionsChange }: Set
             </div>
           </div>
 
+          {/* AI Demo Button */}
+          <Button
+            variant="secondary"
+            className="w-full mb-2"
+            onClick={() => setShowDemoPanel(true)}
+            data-testid="button-ai-demo"
+          >
+            <Brain className="h-5 w-5 mr-2" />
+            AI Engine Demo
+          </Button>
+
           {/* Logout Button */}
           <Button
             variant="destructive"
@@ -168,6 +181,9 @@ export default function SettingsPanel({ onClose, onSmartSuggestionsChange }: Set
           <div className="pb-4" />
         </div>
       </div>
+
+      {/* Demo Panel */}
+      {showDemoPanel && <DemoPanel onClose={() => setShowDemoPanel(false)} />}
     </div>
   );
 }

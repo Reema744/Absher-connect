@@ -1,17 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Info, Brain } from "lucide-react";
+import { Info } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import Header from "@/components/Header";
 import UserProfileCard from "@/components/UserProfileCard";
 import SuggestionsCarousel from "@/components/SuggestionsCarousel";
 import DashboardGrid from "@/components/DashboardGrid";
 import MobileNav from "@/components/MobileNav";
-import DemoPanel from "@/components/DemoPanel";
 import { CarouselSkeleton, ServiceGridSkeleton } from "@/components/LoadingSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import moiLogo from "@assets/ministry-of-interior-logo-png_seeklogo-455595_1764525526112.png";
 import type { Suggestion } from "@shared/schema";
 
@@ -19,7 +17,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("home");
   const [, setLocation] = useLocation();
   const { user } = useAuth();
-  const [showDemoPanel, setShowDemoPanel] = useState(false);
   const [smartSuggestionsEnabled, setSmartSuggestionsEnabled] = useState(() => {
     const saved = localStorage.getItem("smartSuggestionsEnabled");
     return saved !== null ? JSON.parse(saved) : true;
@@ -55,20 +52,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
       <Header onMenuClick={() => {}} onSmartSuggestionsChange={handleSmartSuggestionsChange} />
-      
-      {/* Demo Mode Toggle Button */}
-      <Button
-        onClick={() => setShowDemoPanel(true)}
-        className="fixed bottom-20 right-4 z-40 rounded-full shadow-lg bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-600/90 md:bottom-6"
-        size="lg"
-        data-testid="button-demo-mode"
-      >
-        <Brain className="h-5 w-5 mr-2" />
-        AI Demo
-      </Button>
-
-      {/* Demo Panel */}
-      {showDemoPanel && <DemoPanel onClose={() => setShowDemoPanel(false)} />}
       <main className="max-w-6xl mx-auto px-4 py-2 space-y-6">
         <section aria-label="User Profile">
           {!user ? (

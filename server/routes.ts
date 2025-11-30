@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { type Server } from "http";
 import { storage } from "./storage";
 import { generateSuggestions } from "./suggestions";
+import { generateSuggestionsWithAnalysis } from "./suggestions-demo";
 import { loginSchema } from "@shared/schema";
 
 function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -97,6 +98,52 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Suggestions error:", error);
       return res.status(500).json({ error: "Failed to generate suggestions" });
+    }
+  });
+
+  // Demo endpoint for showing AI analysis
+  app.get("/api/suggestions/:userId/analysis", requireAuth, async (req, res) => {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId, 10);
+    
+    if (isNaN(numericUserId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    if (req.session.userId !== numericUserId) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    try {
+      console.log(`\n${"=".repeat(60)}`);
+      console.log(`🤖 AI SUGGESTION ENGINE - DEMO MODE`);
+      console.log(`${"=".repeat(60)}`);
+      console.log(`📊 Generating analysis for User ID: ${numericUserId}`);
+      
+      const analysis = await generateSuggestionsWithAnalysis(numericUserId);
+      
+      console.log(`\n📡 API Calls Made:`);
+      analysis.apiCalls.forEach(call => {
+        console.log(`   ${call.method} ${call.endpoint} - ${call.status} (${call.responseTime}ms)`);
+      });
+      
+      console.log(`\n🧠 AI Analysis:`);
+      console.log(`   Model: ${analysis.aiAnalysis.modelType} v${analysis.aiAnalysis.modelVersion}`);
+      console.log(`   Documents Analyzed: ${analysis.aiAnalysis.documentsAnalyzed.length}`);
+      analysis.aiAnalysis.documentsAnalyzed.forEach(doc => {
+        console.log(`   - ${doc.documentType}: Score ${doc.aiScore}/${doc.threshold} (${doc.shouldNotify ? "NOTIFY" : "SKIP"})`);
+      });
+      
+      console.log(`\n📤 Output:`);
+      console.log(`   Total Suggestions: ${analysis.output.totalSuggestions}`);
+      console.log(`   By Priority: High(${analysis.output.byPriority.high}), Medium(${analysis.output.byPriority.medium}), Low(${analysis.output.byPriority.low})`);
+      console.log(`   Processing Time: ${analysis.processingTime}ms`);
+      console.log(`${"=".repeat(60)}\n`);
+      
+      return res.json(analysis);
+    } catch (error) {
+      console.error("Analysis error:", error);
+      return res.status(500).json({ error: "Failed to generate analysis" });
     }
   });
 

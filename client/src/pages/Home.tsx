@@ -59,7 +59,7 @@ export default function Home() {
       {/* Demo Mode Toggle Button */}
       <Button
         onClick={() => setShowDemoPanel(true)}
-        className="fixed bottom-24 right-4 z-40 rounded-full shadow-lg bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-600/90"
+        className="fixed bottom-20 right-4 z-40 rounded-full shadow-lg bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-600/90 md:bottom-6"
         size="lg"
         data-testid="button-demo-mode"
       >
@@ -69,7 +69,7 @@ export default function Home() {
 
       {/* Demo Panel */}
       {showDemoPanel && <DemoPanel onClose={() => setShowDemoPanel(false)} />}
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-6xl mx-auto px-4 py-2 space-y-6">
         <section aria-label="User Profile">
           {!user ? (
             <div className="flex items-center gap-4 p-4 rounded-lg border border-gray-200 bg-white">

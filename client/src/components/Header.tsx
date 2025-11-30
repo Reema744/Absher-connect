@@ -1,9 +1,10 @@
-import { Bell, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SettingsPanel from "./SettingsPanel";
 import absherLogo from "@assets/Absher.svg_1764525255245.png";
 import moiLogo from "@assets/ministry-of-interior-logo-png_seeklogo-455595_1764525526112.png";
+import settingsIcon from "@assets/Setting_line_light_1764534055148.png";
+import bellIcon from "@assets/Bell_duotone_line_1764534055147.png";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -41,20 +42,20 @@ export default function Header({ onMenuClick, onSmartSuggestionsChange }: Header
               <Button
                 size="icon"
                 variant="ghost"
-                className="text-gray-600 h-14 w-14"
+                className="h-14 w-14 p-2"
                 onClick={handleSettingsClick}
                 data-testid="button-settings"
               >
-                <Settings className="h-14 w-14" />
+                <img src={settingsIcon} alt="Settings" className="h-10 w-10" />
               </Button>
 
               <Button
                 size="icon"
                 variant="ghost"
-                className="text-gray-600 h-14 w-14"
+                className="h-14 w-14 p-2"
                 data-testid="button-notifications"
               >
-                <Bell className="h-14 w-14" />
+                <img src={bellIcon} alt="Notifications" className="h-10 w-10" />
               </Button>
             </div>
           </div>

@@ -38,24 +38,24 @@ export default function Header({ onMenuClick, onSmartSuggestionsChange }: Header
               />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-9 w-9 p-1"
+                className="h-11 w-11 p-2"
                 onClick={handleSettingsClick}
                 data-testid="button-settings"
               >
-                <img src={settingsIcon} alt="Settings" className="h-6 w-6" />
+                <img src={settingsIcon} alt="Settings" className="h-8 w-8" />
               </Button>
 
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-9 w-9 p-1"
+                className="h-11 w-11 p-2"
                 data-testid="button-notifications"
               >
-                <img src={bellIcon} alt="Notifications" className="h-6 w-6" />
+                <img src={bellIcon} alt="Notifications" className="h-8 w-8" />
               </Button>
             </div>
           </div>

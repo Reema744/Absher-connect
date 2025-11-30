@@ -1,4 +1,4 @@
-import { X, ChevronRight } from "lucide-react";
+import { X, ChevronRight, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
@@ -11,7 +11,7 @@ interface SettingsPanelProps {
 }
 
 export default function SettingsPanel({ onClose, onSmartSuggestionsChange }: SettingsPanelProps) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [smartSuggestions, setSmartSuggestions] = useState(() => {
     const saved = localStorage.getItem("smartSuggestionsEnabled");
     return saved !== null ? JSON.parse(saved) : true;
@@ -149,6 +149,20 @@ export default function SettingsPanel({ onClose, onSmartSuggestionsChange }: Set
               </div>
             </div>
           </div>
+
+          {/* Logout Button */}
+          <Button
+            variant="destructive"
+            className="w-full"
+            onClick={() => {
+              logout();
+              onClose();
+            }}
+            data-testid="button-logout"
+          >
+            <LogOut className="h-5 w-5 mr-2" />
+            Logout
+          </Button>
 
           {/* Footer spacing */}
           <div className="pb-4" />

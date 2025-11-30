@@ -37,19 +37,19 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 size="icon"
                 variant="ghost"
                 className="text-gray-600"
-                data-testid="button-notifications"
+                onClick={handleSettingsClick}
+                data-testid="button-settings"
               >
-                <Bell className="h-5 w-5" />
+                <Settings className="h-5 w-5" />
               </Button>
 
               <Button
                 size="icon"
                 variant="ghost"
                 className="text-gray-600"
-                onClick={handleSettingsClick}
-                data-testid="button-settings"
+                data-testid="button-notifications"
               >
-                <Settings className="h-5 w-5" />
+                <Bell className="h-5 w-5" />
               </Button>
             </div>
           </div>

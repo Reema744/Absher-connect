@@ -7,9 +7,10 @@ import moiLogo from "@assets/ministry-of-interior-logo-png_seeklogo-455595_17645
 
 interface HeaderProps {
   onMenuClick?: () => void;
+  onSmartSuggestionsChange?: (enabled: boolean) => void;
 }
 
-export default function Header({ onMenuClick }: HeaderProps) {
+export default function Header({ onMenuClick, onSmartSuggestionsChange }: HeaderProps) {
   const [showSettings, setShowSettings] = useState(false);
 
   const handleSettingsClick = () => {
@@ -60,7 +61,12 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </div>
       </header>
 
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      {showSettings && (
+        <SettingsPanel
+          onClose={() => setShowSettings(false)}
+          onSmartSuggestionsChange={onSmartSuggestionsChange}
+        />
+      )}
     </>
   );
 }

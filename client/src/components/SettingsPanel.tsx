@@ -7,9 +7,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface SettingsPanelProps {
   onClose: () => void;
+  onSmartSuggestionsChange?: (enabled: boolean) => void;
 }
 
-export default function SettingsPanel({ onClose }: SettingsPanelProps) {
+export default function SettingsPanel({ onClose, onSmartSuggestionsChange }: SettingsPanelProps) {
   const { user } = useAuth();
   const [smartSuggestions, setSmartSuggestions] = useState(() => {
     const saved = localStorage.getItem("smartSuggestionsEnabled");
@@ -18,7 +19,8 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 
   useEffect(() => {
     localStorage.setItem("smartSuggestionsEnabled", JSON.stringify(smartSuggestions));
-  }, [smartSuggestions]);
+    onSmartSuggestionsChange?.(smartSuggestions);
+  }, [smartSuggestions, onSmartSuggestionsChange]);
 
   return (
     <div

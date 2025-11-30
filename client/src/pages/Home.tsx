@@ -45,9 +45,13 @@ export default function Home() {
     setLocation(`/services/${serviceId}`);
   };
 
+  const handleSmartSuggestionsChange = (enabled: boolean) => {
+    setSmartSuggestionsEnabled(enabled);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
-      <Header onMenuClick={() => {}} />
+      <Header onMenuClick={() => {}} onSmartSuggestionsChange={handleSmartSuggestionsChange} />
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         <section aria-label="User Profile">
           {!user ? (

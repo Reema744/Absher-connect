@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Info } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
@@ -17,6 +17,20 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("home");
   const [, setLocation] = useLocation();
   const { user } = useAuth();
+  const [smartSuggestionsEnabled, setSmartSuggestionsEnabled] = useState(() => {
+    const saved = localStorage.getItem("smartSuggestionsEnabled");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  // Listen for storage changes (when settings are updated)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem("smartSuggestionsEnabled");
+      setSmartSuggestionsEnabled(saved !== null ? JSON.parse(saved) : true);
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const { data: suggestions = [], isLoading: isSuggestionsLoading } = useQuery<Suggestion[]>({
     queryKey: ["/api/suggestions", user?.id],
@@ -49,7 +63,7 @@ export default function Home() {
           )}
         </section>
 
-        {(isSuggestionsLoading || suggestions.length > 0) && (
+        {smartSuggestionsEnabled && (isSuggestionsLoading || suggestions.length > 0) && (
           <section aria-label="Smart Suggestions">
             {isSuggestionsLoading ? (
               <CarouselSkeleton />

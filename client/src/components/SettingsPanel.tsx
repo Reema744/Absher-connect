@@ -2,7 +2,7 @@ import { X, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface SettingsPanelProps {
@@ -11,7 +11,14 @@ interface SettingsPanelProps {
 
 export default function SettingsPanel({ onClose }: SettingsPanelProps) {
   const { user } = useAuth();
-  const [smartSuggestions, setSmartSuggestions] = useState(true);
+  const [smartSuggestions, setSmartSuggestions] = useState(() => {
+    const saved = localStorage.getItem("smartSuggestionsEnabled");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("smartSuggestionsEnabled", JSON.stringify(smartSuggestions));
+  }, [smartSuggestions]);
 
   return (
     <div

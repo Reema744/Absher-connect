@@ -41,20 +41,20 @@ export default function Header({ onMenuClick, onSmartSuggestionsChange }: Header
               <Button
                 size="icon"
                 variant="ghost"
-                className="text-gray-600 h-12 w-12"
+                className="text-gray-600 h-14 w-14"
                 onClick={handleSettingsClick}
                 data-testid="button-settings"
               >
-                <Settings className="h-7 w-7" />
+                <Settings className="h-14 w-14" />
               </Button>
 
               <Button
                 size="icon"
                 variant="ghost"
-                className="text-gray-600 h-12 w-12"
+                className="text-gray-600 h-14 w-14"
                 data-testid="button-notifications"
               >
-                <Bell className="h-7 w-7" />
+                <Bell className="h-14 w-14" />
               </Button>
             </div>
           </div>

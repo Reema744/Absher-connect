@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SettingsPanel from "./SettingsPanel";
 import absherLogo from "@assets/Absher.svg_1764525255245.png";
-import moiLogo from "@assets/png-clipart-riyadh-ministry-of-interior-interior-ministry-jeddah-others-logo-national-security_1764525255245.png";
+import moiLogo from "@assets/ministry-of-interior-logo-png_seeklogo-455595_1764525526112.png";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -31,8 +31,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               <img
                 src={moiLogo}
                 alt="Ministry of Interior"
-                className="h-10 w-auto bg-transparent"
-                style={{ mixBlendMode: "multiply" }}
+                className="h-10 w-auto"
                 data-testid="img-moi-logo"
               />
             </div>

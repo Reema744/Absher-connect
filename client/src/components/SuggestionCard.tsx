@@ -1,7 +1,6 @@
-import { FileText, AlertTriangle, Calendar, Users, Star } from "lucide-react";
+import { MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { Suggestion } from "@shared/schema";
 
 interface SuggestionCardProps {
@@ -9,69 +8,53 @@ interface SuggestionCardProps {
   onAction?: (actionUrl: string) => void;
 }
 
-const iconMap = {
-  document: FileText,
-  violation: AlertTriangle,
-  appointment: Calendar,
-  delegation: Users,
-  hajj: Star,
-};
-
-const priorityColors = {
-  high: "bg-destructive text-destructive-foreground",
-  medium: "bg-amber-500 text-white dark:bg-amber-600",
-  low: "bg-primary text-primary-foreground",
-};
-
 export default function SuggestionCard({ suggestion, onAction }: SuggestionCardProps) {
-  const Icon = iconMap[suggestion.type];
-
   return (
     <Card
-      className="flex-shrink-0 w-80 h-44 p-5 flex flex-col justify-between bg-card border border-card-border"
+      className="flex-shrink-0 w-96 p-6 flex flex-col gap-4 bg-green-50 border-2 border-green-200"
       data-testid={`card-suggestion-${suggestion.id}`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <Icon className="h-5 w-5 text-primary" />
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4 flex-1">
+          <div className="h-12 w-12 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
+            <MapPin className="h-6 w-6 text-white" />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-teal-700 mb-1" data-testid={`text-suggestion-label-${suggestion.id}`}>
+              Smart Suggestion from Absher Connect
+            </p>
             <h3
-              className="text-base font-semibold text-foreground line-clamp-1"
+              className="text-2xl font-bold text-gray-900 mb-2"
               data-testid={`text-suggestion-title-${suggestion.id}`}
             >
               {suggestion.title}
             </h3>
+            <p
+              className="text-base text-gray-700"
+              data-testid={`text-suggestion-description-${suggestion.id}`}
+            >
+              {suggestion.description}
+            </p>
           </div>
         </div>
-        {suggestion.expiryDate && (
-          <Badge
-            variant="secondary"
-            className={`text-xs whitespace-nowrap ${priorityColors[suggestion.priority]}`}
-            data-testid={`badge-expiry-${suggestion.id}`}
-          >
-            {suggestion.expiryDate}
-          </Badge>
-        )}
+        <button
+          className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+          data-testid={`button-close-suggestion-${suggestion.id}`}
+          aria-label="Close suggestion"
+        >
+          <X className="h-6 w-6" />
+        </button>
       </div>
 
-      <p
-        className="text-sm text-muted-foreground line-clamp-2 mt-2"
-        data-testid={`text-suggestion-description-${suggestion.id}`}
-      >
-        {suggestion.description}
-      </p>
-
       <Button
-        className="w-full mt-3"
+        className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-full py-2"
         onClick={() => {
           console.log(`Action triggered: ${suggestion.actionUrl}`);
           onAction?.(suggestion.actionUrl);
         }}
         data-testid={`button-action-${suggestion.id}`}
       >
-        Take Action
+        View Details
       </Button>
     </Card>
   );

@@ -114,8 +114,7 @@ export default function SuggestionsCarousel({
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-
-      <div className="flex justify-center gap-2 mt-4" data-testid="carousel-indicators">
+      <div className="flex justify-center gap-2 mt-[0px] mb-[0px]" data-testid="carousel-indicators">
         {suggestions.map((_, index) => (
           <button
             key={index}

@@ -42,9 +42,9 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
               Account Details
             </p>
-            <div className="space-y-3">
+            <div className="bg-gray-50 rounded-lg overflow-hidden">
               {/* User Profile */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover-elevate cursor-pointer">
+              <div className="flex items-center justify-between p-4 hover-elevate cursor-pointer">
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarFallback className="bg-primary text-white">
@@ -67,8 +67,11 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
                 <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
 
+              {/* Divider */}
+              <div className="h-px bg-gray-200" />
+
               {/* Absher Authenticator */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover-elevate cursor-pointer">
+              <div className="flex items-center justify-between p-4 hover-elevate cursor-pointer">
                 <p className="font-semibold text-gray-900">Absher Authenticator</p>
                 <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
@@ -80,21 +83,23 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
               Privacy and Security
             </p>
-            <div className="space-y-3">
+            <div className="bg-gray-50 rounded-lg overflow-hidden">
               {/* Trusted Devices */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-4">
                 <p className="font-semibold text-gray-900">Trusted Devices</p>
                 <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
+              <div className="h-px bg-gray-200" />
 
               {/* Parental Consent */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-4">
                 <p className="font-semibold text-gray-900">Parental Consent</p>
                 <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
+              <div className="h-px bg-gray-200" />
 
               {/* Use Passcode */}
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-semibold text-gray-900">Use Passcode</p>
                   <Switch disabled checked={true} data-testid="toggle-passcode" />
@@ -105,9 +110,10 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
                   longer.
                 </p>
               </div>
+              <div className="h-px bg-gray-200" />
 
               {/* Smart Suggestions from Absher Connect */}
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-semibold text-gray-900">
                     Smart Suggestions from Absher Connect
@@ -123,9 +129,10 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
                   activity.
                 </p>
               </div>
+              <div className="h-px bg-gray-200" />
 
               {/* Blur images */}
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-semibold text-gray-900">Blur images</p>
                   <Switch disabled checked={true} data-testid="toggle-blur-images" />

@@ -6,9 +6,11 @@ import type { Suggestion } from "@shared/schema";
 interface SuggestionCardProps {
   suggestion: Suggestion;
   onAction?: (actionUrl: string) => void;
+  userName?: string;
 }
 
-export default function SuggestionCard({ suggestion, onAction }: SuggestionCardProps) {
+export default function SuggestionCard({ suggestion, onAction, userName }: SuggestionCardProps) {
+  const firstName = userName?.split(" ")[0] || "User";
   return (
     <Card
       className="flex-shrink-0 w-96 p-6 flex flex-col gap-4 bg-green-50 border-2 border-green-200"
@@ -27,7 +29,7 @@ export default function SuggestionCard({ suggestion, onAction }: SuggestionCardP
               className="text-2xl font-bold text-gray-900 mb-2"
               data-testid={`text-suggestion-title-${suggestion.id}`}
             >
-              {suggestion.title}
+              Welcome, {firstName}
             </h3>
             <p
               className="text-base text-gray-700"

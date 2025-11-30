@@ -57,6 +57,7 @@ export default function Home() {
                 suggestions={suggestions}
                 autoSlideInterval={5000}
                 onAction={handleSuggestionAction}
+                userName={user?.name}
               />
             )}
           </section>

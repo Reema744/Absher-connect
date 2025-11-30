@@ -8,12 +8,14 @@ interface SuggestionsCarouselProps {
   suggestions: Suggestion[];
   autoSlideInterval?: number;
   onAction?: (actionUrl: string) => void;
+  userName?: string;
 }
 
 export default function SuggestionsCarousel({
   suggestions,
   autoSlideInterval = 5000,
   onAction,
+  userName,
 }: SuggestionsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -97,7 +99,7 @@ export default function SuggestionsCarousel({
         >
           {suggestions.map((suggestion) => (
             <div key={suggestion.id} className="snap-start">
-              <SuggestionCard suggestion={suggestion} onAction={onAction} />
+              <SuggestionCard suggestion={suggestion} onAction={onAction} userName={userName} />
             </div>
           ))}
         </div>

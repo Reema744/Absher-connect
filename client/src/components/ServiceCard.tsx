@@ -6,12 +6,15 @@ interface ServiceCardProps {
   icon: LucideIcon;
   label: string;
   onClick?: () => void;
+  wide?: boolean;
 }
 
-export default function ServiceCard({ id, icon: Icon, label, onClick }: ServiceCardProps) {
+export default function ServiceCard({ id, icon: Icon, label, onClick, wide }: ServiceCardProps) {
   return (
     <Card
-      className="flex flex-col items-center justify-center p-4 aspect-square cursor-pointer hover-elevate active-elevate-2 border border-card-border"
+      className={`flex flex-col items-center justify-center p-4 cursor-pointer hover-elevate active-elevate-2 border border-card-border ${
+        wide ? "col-span-2 aspect-video" : "aspect-square"
+      }`}
       onClick={() => {
         console.log(`Service clicked: ${label}`);
         onClick?.();

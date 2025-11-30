@@ -12,11 +12,11 @@ import ServiceCard from "./ServiceCard";
 
 // todo: remove mock functionality
 const services = [
+  { id: "driving-license", icon: Car, label: "My Vehicles", wide: true },
   { id: "passport", icon: FileText, label: "Passport" },
   { id: "national-id", icon: CreditCard, label: "National ID" },
   { id: "appointments", icon: Calendar, label: "Appointments" },
   { id: "delegations", icon: Users, label: "Delegations" },
-  { id: "driving-license", icon: Car, label: "My Vehicles" },
   { id: "civil-affairs", icon: Building2, label: "Civil Affairs" },
   { id: "travel", icon: Plane, label: "Travel" },
   { id: "security", icon: Shield, label: "Security" },
@@ -42,6 +42,7 @@ export default function DashboardGrid({ onServiceClick }: DashboardGridProps) {
             id={service.id}
             icon={service.icon}
             label={service.label}
+            wide={(service as any).wide}
             onClick={() => onServiceClick?.(service.id)}
           />
         ))}

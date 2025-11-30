@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { Info } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import Header from "@/components/Header";
 import UserProfileCard from "@/components/UserProfileCard";
@@ -86,8 +87,8 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <div className="flex items-start gap-2 text-xs text-blue-600 bg-blue-50 p-3 rounded-lg">
-            <span className="text-lg">●</span>
+          <div className="flex items-start gap-2 text-xs text-gray-600">
+            <Info className="h-4 w-4 mt-0.5 flex-shrink-0" data-testid="icon-info" />
             <span>Your most relevant documents. Tap See All to see the rest of your documents and your family members</span>
           </div>
         </section>

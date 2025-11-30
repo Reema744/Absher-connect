@@ -33,7 +33,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
       <Header onMenuClick={() => {}} />
-
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         <section aria-label="User Profile">
           {!user ? (
@@ -64,7 +63,7 @@ export default function Home() {
           </section>
         )}
 
-        <section aria-label="My Digital Documents" className="p-4">
+        <section aria-label="My Digital Documents" className="p-4 mt-[6px] mb-[6px] pt-[0px] pb-[0px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">My Digital Documents</h2>
             <button className="text-sm text-primary font-medium">See All</button>
@@ -101,7 +100,6 @@ export default function Home() {
           )}
         </section>
       </main>
-
       <MobileNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );

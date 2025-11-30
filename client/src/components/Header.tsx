@@ -19,7 +19,7 @@ export default function Header({ onMenuClick, onSmartSuggestionsChange }: Header
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-50 w-full">
         <div className="px-4 py-3 max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -37,24 +37,24 @@ export default function Header({ onMenuClick, onSmartSuggestionsChange }: Header
               />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Button
                 size="icon"
                 variant="ghost"
-                className="text-gray-600"
+                className="text-gray-600 h-12 w-12"
                 onClick={handleSettingsClick}
                 data-testid="button-settings"
               >
-                <Settings className="h-5 w-5" />
+                <Settings className="h-7 w-7" />
               </Button>
 
               <Button
                 size="icon"
                 variant="ghost"
-                className="text-gray-600"
+                className="text-gray-600 h-12 w-12"
                 data-testid="button-notifications"
               >
-                <Bell className="h-5 w-5" />
+                <Bell className="h-7 w-7" />
               </Button>
             </div>
           </div>

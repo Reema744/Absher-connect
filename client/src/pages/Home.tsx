@@ -63,7 +63,7 @@ export default function Home() {
           </section>
         )}
 
-        <section aria-label="My Digital Documents" className="bg-white rounded-lg p-4 border border-gray-200">
+        <section aria-label="My Digital Documents" className="p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">My Digital Documents</h2>
             <button className="text-sm text-primary font-medium">See All</button>

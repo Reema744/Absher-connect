@@ -6,7 +6,6 @@ import {
   Car,
   Building2,
   Plane,
-  Shield,
 } from "lucide-react";
 import ServiceCard from "./ServiceCard";
 
@@ -19,7 +18,6 @@ const services = [
   { id: "delegations", icon: Users, label: "Delegations" },
   { id: "civil-affairs", icon: Building2, label: "Civil Affairs" },
   { id: "travel", icon: Plane, label: "Travel" },
-  { id: "security", icon: Shield, label: "Security" },
 ];
 
 interface DashboardGridProps {

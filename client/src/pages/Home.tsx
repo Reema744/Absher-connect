@@ -44,7 +44,7 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <UserProfileCard name={user.name} greeting="Welcome back" />
+            <UserProfileCard name={user.name} greeting="Welcome back" nationalId={user.nationalId} />
           )}
         </section>
 
@@ -69,20 +69,29 @@ export default function Home() {
         )}
 
         <section aria-label="My Digital Documents" className="bg-white rounded-lg p-4 border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">My Digital Documents</h2>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <span className="text-sm text-gray-700">Passport</span>
-              <span className="text-xs text-gray-500">Expires in 45 days</span>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">My Digital Documents</h2>
+            <button className="text-sm text-primary font-medium">See All</button>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="bg-green-100 rounded-lg p-4 aspect-square flex items-center justify-center">
+              <div className="text-green-700 opacity-30">
+                <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                </svg>
+              </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <span className="text-sm text-gray-700">National ID</span>
-              <span className="text-xs text-gray-500">Valid</span>
+            <div className="bg-green-100 rounded-lg p-4 aspect-square flex items-center justify-center">
+              <div className="text-green-700 opacity-30">
+                <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                </svg>
+              </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <span className="text-sm text-gray-700">Driving License</span>
-              <span className="text-xs text-gray-500">Expires in 120 days</span>
-            </div>
+          </div>
+          <div className="flex items-start gap-2 text-xs text-blue-600 bg-blue-50 p-3 rounded-lg">
+            <span className="text-lg">●</span>
+            <span>Your most relevant documents. Tap See All to see the rest of your documents and your family members</span>
           </div>
         </section>
 

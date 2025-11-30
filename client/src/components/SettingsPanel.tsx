@@ -1,5 +1,6 @@
-import { X, Bell, Lock, Globe } from "lucide-react";
+import { X, Bell, Lock, Globe, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 
 interface SettingsPanelProps {
@@ -7,8 +8,14 @@ interface SettingsPanelProps {
 }
 
 export default function SettingsPanel({ onClose }: SettingsPanelProps) {
+  const { logout } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [language, setLanguage] = useState("en");
+
+  const handleLogout = async () => {
+    await logout();
+    onClose();
+  };
 
   return (
     <div
@@ -83,13 +90,24 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
             </select>
           </div>
 
-          <Button
-            onClick={onClose}
-            className="w-full mt-8"
-            data-testid="button-save-settings"
-          >
-            Done
-          </Button>
+          <div className="border-t border-gray-200 pt-6 space-y-3">
+            <Button
+              onClick={onClose}
+              className="w-full"
+              data-testid="button-save-settings"
+            >
+              Done
+            </Button>
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="w-full"
+              data-testid="button-logout"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
     </div>

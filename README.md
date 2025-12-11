@@ -101,25 +101,30 @@ demo → (link added below)
 ```
 If the user is not near the causeway, the contextual suggestion is simply not included.
 
-Presentation Slides
+---
 
+## Presentation & Demo
+
+**Presentation Slides**  
 https://www.canva.com/design/DAG7MJ7qBus/ocUZIB2tKSvm7PIH3tWH9g/edit?utm_content=DAG7MJ7qBus&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton 
 
-Demo
-
+**Demo**  
 https://www.youtube.com/shorts/bzwmg_x7nW8 
 
-MVP
+**MVP**  
+(Short note here if you want)
 
 ---
 
-Integration Readiness
+## Integration Readiness
+
 This AI module is already designed in a way that makes it ready for real integration inside the Absher ecosystem:
-- Works through well-defined APIs
-- Fast enough for real-time use
-- Built using modular and scalable logic
-- Requires no changes to Absher backend architecture
-- Can begin operating instantly upon connecting to real Absher data
+
+- Works through well-defined APIs  
+- Fast enough for real-time use  
+- Built using modular and scalable logic  
+- Requires no changes to Absher backend architecture  
+- Can begin operating instantly upon connecting to real Absher data  
 
 The module is fully production-ready and suitable for direct deployment once real data access is enabled.
 

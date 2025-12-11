@@ -99,7 +99,7 @@ demo → (link added below)
   ]
 }
 ```
-If the user is not near the causeway, the contextual suggestion is simply not included.
+<small>If the user is not near the causeway, the contextual suggestion is simply not included.</small>
 ---
 
 Presentation Slides:

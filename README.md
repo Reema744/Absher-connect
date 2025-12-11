@@ -66,8 +66,10 @@ analyzes documents + context
 
 Returns structured Smart Suggestions
       ↓
+
 App UI
       ↓
+
 renders suggestions as interactive cards
 
 

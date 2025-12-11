@@ -1,5 +1,4 @@
 # Absher Connect – Proactive Smart Suggestions 
-
 Absher Connect introduces an AI-driven decision engine that analyzes the user’s situation and identifies the perfect moment to display proactive Smart Suggestions inside the Absher ecosystem.
 
 The intelligence combines multiple signals — document metadata, expiry windows, behavioral patterns, and real-time context — to produce highly personalized recommendations that improve user experience and reduce friction in government services.
@@ -9,26 +8,21 @@ This repository contains all source code, AI logic, demo scripts, and presentati
 ---
 
 ## Project Overview
-
 Instead of waiting for a user’s document to expire or expecting the user to search for information, Absher Connect monitors key signals and proactively recommends actions such as:
-
 - Renewing important documents  
 - Completing expiring services  
 - Highlighting urgency and deadlines  
 - Providing location-aware actions (e.g., near King Fahd Causeway)  
 
 The idea is simple:
-
 > **“Deliver the right suggestion, to the right user, at the right moment.”**
 
 ---
 
 ## AI Model (Unified Decision Engine)
-
 Our AI model works as an integrated engine that processes multiple inputs and returns a single structured list of Smart Suggestions.
 
 When a user opens the app:
-
 1. The system receives the **user_id** and (optionally) their real-time **location (GPS)**.  
 2. It fetches the user's documents through backend APIs (simulated during the hackathon).  
 3. The AI model evaluates:
@@ -51,14 +45,12 @@ This enables a more natural and real-world intelligent behavior, extending the c
 
 ---
 
-## 🛡 Data Privacy
-
+## Data Privacy
 Because Absher data is highly sensitive, all development and experimentation were performed using a **synthetic dummy dataset** that simulates real-world scenarios without exposing or relying on actual user data.
 
 ---
 
-## 🏗 System Architecture
-
+## System Architecture
 Absher App
 ↓ (user_id + optional GPS)
 Backend Service
@@ -69,22 +61,15 @@ Returns structured Smart Suggestions
 App UI
 ↓ renders suggestions as interactive cards
 
-yaml
-Copy code
-
----
-
 ## Repository Structure
-
 ai_model.py → AI Decision Engine (documents + context analysis)
 generate_dataset.py → Synthetic dataset generator
 /data/ → Synthetic training data
 README.md → Project documentation
-presentation.pdf → (link added below)
-demo_video.mp4 → (link added below)
+presentation → (link added below)
+demo → (link added below)
 
 ## Example Output
-
 ```json
 {
   "suggestions": [
@@ -101,26 +86,26 @@ demo_video.mp4 → (link added below)
     }
   ]
 }
+```
 If the user is not near the causeway, the contextual suggestion is simply not included.
 
- Presentation & Demo
+
 Presentation Slides:
- (Add your Google Slides link here)
+(Add your Google Slides link here)
 
 Demo (MVP):
- (Add your drive/youtube link here)
+(Add your drive/youtube link here)
 
- Integration Readiness
+Integration Readiness
+
 This AI module is already designed in a way that makes it ready for real integration inside the Absher ecosystem:
-* Works through well-defined APIs
-
-* Fast enough for real-time use
-
-* Built using modular and scalable logic
-
-* Requires no changes to Absher backend architecture
-
-* Can begin operating instantly upon connecting to real Absher data
+- Works through well-defined APIs
+- Fast enough for real-time use
+- Built using modular and scalable logic
+- Requires no changes to Absher backend architecture
+- Can begin operating instantly upon connecting to real Absher data
 
 The module is fully production-ready and suitable for direct deployment once real data access is enabled.
+
+د}
 

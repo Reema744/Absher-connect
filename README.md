@@ -51,15 +51,25 @@ Because Absher data is highly sensitive, all development and experimentation wer
 ---
 
 ## System Architecture
+
 Absher App
-↓ (user_id + optional GPS)
+      ↓
+ (user_id + GPS)
+
 Backend Service
-↓ fetches user's document data
+      ↓
+fetches user's document data
+
 AI Decision Engine (this module)
-↓ analyzes documents + context
+      ↓
+analyzes documents + context
+
 Returns structured Smart Suggestions
+      ↓
 App UI
-↓ renders suggestions as interactive cards
+      ↓
+renders suggestions as interactive cards
+
 
 ## Repository Structure
 ai_model.py → AI Decision Engine (documents + context analysis)

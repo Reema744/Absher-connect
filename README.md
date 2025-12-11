@@ -100,6 +100,7 @@ demo → (link added below)
 }
 ```
 If the user is not near the causeway, the contextual suggestion is simply not included.
+
 Presentation Slides
 https://www.canva.com/design/DAG7MJ7qBus/ocUZIB2tKSvm7PIH3tWH9g/edit?utm_content=DAG7MJ7qBus&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton 
 

@@ -14,7 +14,6 @@ During the hackathon, the model was enhanced with location-aware intelligence, e
 
  **“You appear to be near King Fahd Causeway. You can complete customs or border payments now.”**
 
-All development was performed using synthetic dummy data to respect Absher's strict privacy and security standards.
 
 ## System Architecture
 

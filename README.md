@@ -1,7 +1,9 @@
 ## Absher Connect 
+
 Absher Connect introduces an AI-driven decision engine that analyzes user data and real-time context to deliver proactive Smart Suggestions inside the Absher ecosystem.
+
 The system intelligently identifies the right action, for the right user, at the right moment — enhancing experience and reducing friction in government services.
----
+
 Our AI engine evaluates multiple signals, including:
 - Document importance & expiry windows
 - User behavior patterns

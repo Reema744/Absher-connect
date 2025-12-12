@@ -11,6 +11,7 @@ Our AI engine evaluates multiple signals, including:
 - Context-aware triggers (e.g., approaching King Fahd Causeway)
 
 During the hackathon, the model was enhanced with location-aware intelligence, enabling suggestions such as:
+
  **“You appear to be near King Fahd Causeway. You can complete customs or border payments now.”**
 
 All development was performed using synthetic dummy data to respect Absher's strict privacy and security standards.

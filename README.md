@@ -15,7 +15,7 @@ During the hackathon, the model was enhanced with location-aware intelligence, e
  **“You appear to be near King Fahd Causeway. You can complete customs or border payments now.”**
 
 
-## System Architecture
+## System Flow
 
 Absher App → Backend APIs → AI Decision Engine → Smart Suggestions → App UI
 
